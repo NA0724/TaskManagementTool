@@ -10,22 +10,22 @@
 // https://www.mongodb.com/docs/mongodb-vscode/playgrounds/
 
 // Select the database to use.
-use('mongodbVSCodePlaygroundDB');
+use('taskmanagementdb');
 
 // Insert a few documents into the sales collection.
 db.getCollection('User').insertMany([
-  { 'firstname': 'Neha', 'lastname': 'Raj', 'username': 'nraj', 'password': 'nraj@123', 'email': 'nraj@xyz.com' },
-  { 'firstname': 'Bharti', 'lastname': 'Prakash', 'username': 'bprak', 'password': 'bprak@123', 'email': 'bprak@xyz.com' },
-  { 'firstname': 'Silvi', 'lastname': 'Monga', 'username': 'smong', 'password': 'smong@123', 'email': 'smong@xyz.com' },
-  { 'firstname': 'Tony', 'lastname': 'Stark', 'username': 'tstar', 'password': 'tstar@123', 'email': 'tstar@xyz.com' },
-  { 'firstname': 'Peter', 'lastname': 'Parker', 'username': 'ppar', 'password': 'ppar@123', 'email': 'ppar@xyz.com' },
-  { 'firstname': 'Chandler', 'lastname': 'Bing', 'username': 'cbing', 'password': 'cbing@123',  'email': 'cbing@xyz.com' },
-  { 'firstname': 'Monical', 'lastname': 'Geller', 'username': 'mgel', 'password': 'mgel@123', 'email': 'mgel@xyz.com' },
-  { 'firstname': 'Rachel', 'lastname': 'Green', 'username': 'rgre', 'password': 'rgre@123', 'email': 'rgre@xyz.com' },
-  { 'firstname': 'Ross', 'lastname': 'Geller', 'username': 'rgel', 'password': 'rgel@123', 'email': 'rgel@xyz.com' },
-  { 'firstname': 'Pheobe', 'lastname': 'Buffay', 'username': 'pbuf', 'password': 'pbuf@123', 'email': 'pbuf@xyz.com' },
-  { 'firstname': 'Joey', 'lastname': 'Tribiiani', 'username': 'jtrib', 'password': 'jtrib@123', 'email': 'jtrib@xyz.com' },
-  { 'firstname': 'Arya', 'lastname': 'Stark', 'username': 'astar', 'password': 'astar@123', 'email': 'astar@xyz.com' },
+  { 'firstname': 'Neha', 'lastname': 'Raj', 'username': 'nraj', 'password': 'nraj@123', 'email': 'nraj@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Bharti', 'lastname': 'Prakash', 'username': 'bprak', 'password': 'bprak@123', 'email': 'bprak@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Silvi', 'lastname': 'Monga', 'username': 'smong', 'password': 'smong@123', 'email': 'smong@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Tony', 'lastname': 'Stark', 'username': 'tstar', 'password': 'tstar@123', 'email': 'tstar@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Peter', 'lastname': 'Parker', 'username': 'ppar', 'password': 'ppar@123', 'email': 'ppar@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Chandler', 'lastname': 'Bing', 'username': 'cbing', 'password': 'cbing@123',  'email': 'cbing@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Monical', 'lastname': 'Geller', 'username': 'mgel', 'password': 'mgel@123', 'email': 'mgel@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Rachel', 'lastname': 'Green', 'username': 'rgre', 'password': 'rgre@123', 'email': 'rgre@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Ross', 'lastname': 'Geller', 'username': 'rgel', 'password': 'rgel@123', 'email': 'rgel@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Pheobe', 'lastname': 'Buffay', 'username': 'pbuf', 'password': 'pbuf@123', 'email': 'pbuf@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Joey', 'lastname': 'Tribiiani', 'username': 'jtrib', 'password': 'jtrib@123', 'email': 'jtrib@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Arya', 'lastname': 'Stark', 'username': 'astar', 'password': 'astar@123', 'email': 'astar@xyz.com', 'roles':['R1'] },
 ]);
 
 
