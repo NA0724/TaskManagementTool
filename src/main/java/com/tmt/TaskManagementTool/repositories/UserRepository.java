@@ -10,9 +10,9 @@ import com.tmt.TaskManagementTool.models.User;
 
 @Repository
 public interface UserRepository extends MongoRepository<User, ObjectId> {
+
+    //mongodb and spring boot allows to search by property names by dynamically creating queries
     Optional<User> getUserByUsername(String username);
     Optional<User> findByEmail(String email);
-    //void deleteUser();
-    User updateUser(String username);
-    User createUser(User user);
+    
 }

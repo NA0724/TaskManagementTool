@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +36,8 @@ public class UserController {
      * create a new user in the database
      */
     @GetMapping("/createUser")
-    public ResponseEntity<List<User>> createUser(){
-        return new ResponseEntity<List<User>>(userService.getUsers(), HttpStatus.OK);
+    public ResponseEntity<User> createUser(@RequestBody User user){
+        return new ResponseEntity<User>(userService.createUser(user), HttpStatus.CREATED);
     }
 
     /*
@@ -65,9 +67,9 @@ public class UserController {
     /*
      * search and update a user in the database by id
      */
-    @GetMapping("/updateUser/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username){
-        return new ResponseEntity<User>(userService.updateUser(username), HttpStatus.OK);
+    @PutMapping("/updateUser/{username}")
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user){
+        return new ResponseEntity<User>(userService.updateUser(username, user), HttpStatus.OK);
     }
 
     /*

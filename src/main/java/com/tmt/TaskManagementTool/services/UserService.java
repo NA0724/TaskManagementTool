@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.tmt.TaskManagementTool.models.User;
@@ -15,6 +16,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -32,14 +36,32 @@ public class UserService {
         return userRepository.getUserByUsername(username);
     }
 
-    public User createUser() {
-        User user = new User();
+    public User createUser(User user) {
+        //User user = new User();
         userRepository.save(user);
         return userRepository.insert(user);
     }
 
-    public User updateUser(String username) {
-        return userRepository.updateUser(username);
+    public User updateUser(String username, User user) {
+        Optional<User> optUser = userRepository.getUserByUsername(username);
+        User u = optUser.get(); 
+        if(u.getFirstname()!= null) {
+            u.setFirstname(user.getFirstname());
+        }
+        if(u.getLastname()!= null) {
+            u.setLastname(user.getLastname());
+        }
+        if(u.getEmail()!= null) {
+            u.setEmail(user.getEmail());
+        }
+        if(u.getUsername()!= null) {
+            u.setUsername(user.getUsername());
+        }
+        if(u.getPassword()!= null) {
+            u.setPassword(user.getPassword());
+        }
+        userRepository.save(u);
+        return u;
     }
 
     public void deleteUser(String username) {
