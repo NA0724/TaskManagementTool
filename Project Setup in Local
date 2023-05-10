@@ -8,6 +8,12 @@ Create env file for adding db properties
     MONGO_CLUSTER="cluster1.ykcfdcd.mongodb.net"
     MONGO_URI="mongodb+srv://<username>:<password>@cluster1.ykcfdcd.mongodb.net"
 
+
+
+Checkout to main branch, then do fetch and pull
+Create a new branch from main branch
+
+
 Then go to .gitignore file and add the following
 ### ENV File ###
 .env

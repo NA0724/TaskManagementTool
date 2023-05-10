@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "Task")
+@Document( collection = "Permissions")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
