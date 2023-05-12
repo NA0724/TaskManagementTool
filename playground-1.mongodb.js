@@ -12,6 +12,7 @@
 // Select the database to use.
 use('taskmanagementdb');
 
+
 // Insert a few documents into the sales collection.
 db.getCollection('User').insertMany([
   { 'firstname': 'Neha', 'lastname': 'Raj', 'username': 'nraj', 'password': 'nraj@123', 'email': 'nraj@xyz.com', 'roles':['R1'] },
@@ -25,33 +26,36 @@ db.getCollection('User').insertMany([
   { 'firstname': 'Ross', 'lastname': 'Geller', 'username': 'rgel', 'password': 'rgel@123', 'email': 'rgel@xyz.com', 'roles':['R1'] },
   { 'firstname': 'Pheobe', 'lastname': 'Buffay', 'username': 'pbuf', 'password': 'pbuf@123', 'email': 'pbuf@xyz.com', 'roles':['R1'] },
   { 'firstname': 'Joey', 'lastname': 'Tribiiani', 'username': 'jtrib', 'password': 'jtrib@123', 'email': 'jtrib@xyz.com', 'roles':['R1'] },
-  { 'firstname': 'Arya', 'lastname': 'Stark', 'username': 'astar', 'password': 'astar@123', 'email': 'astar@xyz.com', 'roles':['R1'] },
+  { 'firstname': 'Arya', 'lastname': 'Stark', 'username': 'arstar', 'password': 'astar@123', 'email': 'astar@xyz.com', 'roles':['R1'] },
 ]);
-
+db.User.createIndex( { "username": 1 } , { unique: true , required : true} )
 
 
 // Insert a few documents into the sales collection.
-db.getCollection('Roles').insertMany([
-  { 'role_id': 'R1', 'role_name': 'Administrator', 'permissions': ['P1','P2','P3', 'P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
-  { 'role_id': 'R2', 'role_name': 'Manager', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
-  { 'role_id': 'R3', 'role_name': 'Team Lead', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
-  { 'role_id': 'R4', 'role_name': 'Team Member', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
+db.getCollection('Role').insertMany([
+  { 'rid': 'R1', 'name': 'Administrator', 'permissions': ['P1','P2','P3', 'P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
+  { 'rid': 'R2', 'name': 'Manager', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
+  { 'rid': 'R3', 'name': 'Team Lead', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
+  { 'rid': 'R4', 'name': 'Team Member', 'permissions': ['P4','P5','P6','P7', 'P8', 'P9', 'P10'] },
 ]);
+db.Role.createIndex( { "rid": 1} , {unique: true, required : true} )
+
 
 // Insert a few documents into the sales collection.
-db.getCollection('Permissions').insertMany([
-  { 'permission_id': 'P1', 'permission_name': 'Create User' },
-  { 'permission_id': 'P2', 'permission_name': 'Update User' },
-  { 'permission_id': 'P3', 'permission_name': 'Delete User' },
-  { 'permission_id': 'P4', 'permission_name': 'Create Task' },
-  { 'permission_id': 'P5', 'permission_name': 'Update Task' },
-  { 'permission_id': 'P6', 'permission_name': 'Delete Task' },
-  { 'permission_id': 'P7', 'permission_name': 'Create Group' },
-  { 'permission_id': 'P8', 'permission_name': 'Update Group' },
-  { 'permission_id': 'P9', 'permission_name': 'Delete Group' },
-  { 'permission_id': 'P10', 'permission_name': 'Add User into Group' },
-  { 'permission_id': 'P11', 'permission_name': 'Delete User from Group' },
+db.getCollection('Permission').insertMany([
+  { 'pid': 'P1', 'name': 'Create User' },
+  { 'pid': 'P2', 'name': 'Update User' },
+  { 'pid': 'P3', 'name': 'Delete User' },
+  { 'pid': 'P4', 'name': 'Create Task' },
+  { 'pid': 'P5', 'name': 'Update Task' },
+  { 'pid': 'P6', 'name': 'Delete Task' },
+  { 'pid': 'P7', 'name': 'Create Group' },
+  { 'pid': 'P8', 'name': 'Update Group' },
+  { 'pid': 'P9', 'name': 'Delete Group' },
+  { 'pid': 'P10', 'name': 'Add User into Group' },
+  { 'pid': 'P11', 'name': 'Delete User from Group' },
 ]);
+db.Permission.createIndex( { "pid": 1 } , { unique: true, required : true} )
 
 
 // Run a find command to view items sold on April 4th, 2014.
