@@ -59,7 +59,7 @@ public class UserController {
     /*
      * search and get a user in the database by username
      */
-    @GetMapping("/getUserByUsername/{username}")
+    @GetMapping("/search/{username}")
     public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
         return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
     }
@@ -67,7 +67,7 @@ public class UserController {
     /*
      * search and update a user in the database by id
      */
-    @PutMapping("/updateUser/{username}")
+    @PutMapping("/update/{username}")
     public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user){
         return new ResponseEntity<User>(userService.updateUser(username, user), HttpStatus.OK);
     }
@@ -75,7 +75,7 @@ public class UserController {
     /*
      * delete a user in the database by username
      */
-    @GetMapping("/deleteUser/{username}")
+    @GetMapping("/delete/{username}")
     public void deleteUser(@PathVariable String username){
         userService.deleteUser(username);
     }

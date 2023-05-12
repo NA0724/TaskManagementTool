@@ -11,17 +11,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "Roles")
+@Document( collection = "Role")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Roles {
+public class Role {
 
     @Id
     private ObjectId id;
-    private String role_id;
-    private String role_name;
+    private String rid;
+    private String name;
     @DocumentReference
-    private List<Permissions> permissions;
+    private List<Permission> permissions;
     
 }

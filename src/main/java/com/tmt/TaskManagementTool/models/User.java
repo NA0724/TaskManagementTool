@@ -25,7 +25,7 @@ public class User {
     private String firstname;
     private String lastname;
     @DocumentReference
-    private List<Roles> roles;
+    private List<Role> roles;
 
     
 }

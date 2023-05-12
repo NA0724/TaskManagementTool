@@ -8,15 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "Task")
+@Document( collection = "Permission")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Permissions {
+public class Permission {
 
     @Id
     private ObjectId id;
-    private String permission_id;
-    private String permission_name;
+    private String pid;
+    private String name;
     
 }
