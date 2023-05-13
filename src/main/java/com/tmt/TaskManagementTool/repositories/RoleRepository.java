@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import com.tmt.TaskManagementTool.models.Role;
 
 public interface RoleRepository extends MongoRepository<Role, ObjectId>{
+    Optional<Role> getRoleById(String id);
+    Optional<Role> getRoleByRid(String rid);
     Optional<Role> getRoleByName(String name);
-    Optional<Role> getRoleById(String id); 
+     
 }
