@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.tmt.TaskManagementTool.models.User;
@@ -16,9 +15,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     public List<User> getUsers() {
         return userRepository.findAll();

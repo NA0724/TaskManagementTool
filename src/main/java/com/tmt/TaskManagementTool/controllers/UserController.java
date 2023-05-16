@@ -35,39 +35,15 @@ public class UserController {
     /*
      * create a new user in the database
      */
-    @GetMapping("/createUser")
+    @GetMapping("/create-user")
     public ResponseEntity<User> createUser(@RequestBody User user){
         return new ResponseEntity<User>(userService.createUser(user), HttpStatus.CREATED);
     }
 
     /*
-     * search and get a user in the database by id
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id){
-        return new ResponseEntity<Optional<User>>(userService.getUserById(id), HttpStatus.OK);
-    }
-
-    /*
-     * search and get a user in the database by email
-     */
-    @GetMapping("/getUserByEmail/{email}")
-    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email){
-        return new ResponseEntity<Optional<User>>(userService.getUserByEmail(email), HttpStatus.OK);
-    }
-
-    /*
-     * search and get a user in the database by username
-     */
-    @GetMapping("/search/{username}")
-    public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
-        return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
-    }
-
-    /*
      * search and update a user in the database by id
      */
-    @PutMapping("/update/{username}")
+    @PutMapping("/edit-user/{username}")
     public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user){
         return new ResponseEntity<User>(userService.updateUser(username, user), HttpStatus.OK);
     }
@@ -75,9 +51,33 @@ public class UserController {
     /*
      * delete a user in the database by username
      */
-    @GetMapping("/delete/{username}")
+    @GetMapping("/delete-user/{username}")
     public void deleteUser(@PathVariable String username){
         userService.deleteUser(username);
+    }
+
+      /*
+     * search and get a user in the database by id
+     */
+    @GetMapping("/search-id/{id}")
+    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id){
+        return new ResponseEntity<Optional<User>>(userService.getUserById(id),HttpStatus.OK) ;
+    }
+
+    /*
+     * search and get a user in the database by email
+     */
+    @GetMapping("/search-email/{email}")
+    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email){
+        return new ResponseEntity<Optional<User>>(userService.getUserByEmail(email), HttpStatus.OK);
+    }
+
+    /*
+     * search and get a user in the database by username
+     */
+    @GetMapping("/search-username/{username}")
+    public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
+        return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
     }
     
 }
