@@ -65,5 +65,9 @@ public class UserService {
         ObjectId id = user.get().getId();
         userRepository.deleteById(id);
     }
+
+    public boolean existsByUsername(String username){
+        return userRepository.existsByUsername(username);
+    }
     
 }
