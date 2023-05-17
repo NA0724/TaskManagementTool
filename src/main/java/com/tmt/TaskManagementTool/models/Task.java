@@ -21,7 +21,7 @@ public class Task {
     private String status;
     private String priority;
     private String dueDate;
-    private String assignee;
+    private User createdBy;
     private String assignedTo;
     private String assignedBy;
     private String assignedDate;

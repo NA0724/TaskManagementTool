@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.User;
+import com.tmt.TaskManagementTool.services.NotificationService;
 import com.tmt.TaskManagementTool.services.UserService;
 
 @RestController
@@ -23,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private NotificationService notificationService;
     
     /*
      * showAllUsers(): show all users in the database
@@ -78,6 +83,26 @@ public class UserController {
     @GetMapping("/search-username/{username}")
     public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
         return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
+    }
+
+     /*
+     * get all notifications from the database for user
+     */
+    @GetMapping("/notifications")
+    public ResponseEntity<List<Notification>> getAllNotificationForUser(@PathVariable String username){
+        return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username), HttpStatus.OK);
+    }
+
+    /*
+     * get all notifications from the database for user
+     */
+    @GetMapping("/myprofile")
+    public ResponseEntity<Optional<User>> getMyProfilePage(@PathVariable String username){
+        Optional<User> user = userService.getUserByUsername(username);
+        // TODO create query for the following methods
+        //Optional<Role> role = roleService.getRoleByUser(username);
+        //Optional<Permission> permission = permissionService.getPermissionByRole(role);
+        return new ResponseEntity<Optional<User>>(HttpStatus.OK);
     }
     
 }
