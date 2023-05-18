@@ -24,11 +24,11 @@ import com.tmt.TaskManagementTool.models.User;
 @EnableWebSecurity
 public class SecurityConfig {
 
-     @Autowired
-    private AuthenticationProvider loginAuthenticationProvider;
+    
+    //private AuthenticationProvider loginAuthenticationProvider;
 
-    @Autowired
-    private AuthenticationSuccessHandler loginSuccessHandler;
+   
+    //private AuthenticationSuccessHandler loginSuccessHandler;
     
 
 
@@ -46,23 +46,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        /*http.csrf().disable()
+        http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
                         //authorize.anyRequest().authenticated()
                         authorize.requestMatchers(HttpMethod.POST, "/api/**").permitAll()
                                 .requestMatchers("/api/v1/**").permitAll()
                                 .anyRequest().authenticated()
 
-                );*/
+                );
 
         
-         http.csrf().disable()
+        /*http.csrf().disable()
                 .authorizeHttpRequests()
                 // make sure to grant access to any login page you are forwarding to
                 .requestMatchers("/api/v1/login").permitAll()
                 .and()
-                .authenticationProvider(loginAuthenticationProvider)
-                .formLogin().loginPage("/api/v1/login").successHandler(loginSuccessHandler)
+                .authenticationProvider(null)
+                .formLogin().loginPage("/api/v1/login").successHandler(null)
                 .and()
                 .logout().logoutUrl("/ap1/v1/logout").logoutSuccessUrl("/api/v1/").deleteCookies("JSESSIONID")
                 .and()
@@ -72,14 +72,14 @@ public class SecurityConfig {
                 .maxSessionsPreventsLogin(false)
                 .and()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .invalidSessionUrl("/api/v1/login");
+                .invalidSessionUrl("/api/v1/login");*/
         
 
         return http.build();
     }
 
-    @Bean
-	public UserDetailsService userDetailsService() {
+    
+	/*public UserDetailsService userDetailsService() {
 		UserDetails user =
 			 User.withDefaultPasswordEncoder()
 				.username("user")
@@ -88,5 +88,5 @@ public class SecurityConfig {
 				.build();
 
 		return new InMemoryUserDetailsManager(user);
-	}
+	}*/
 }

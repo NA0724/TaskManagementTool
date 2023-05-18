@@ -21,7 +21,7 @@ import com.tmt.TaskManagementTool.services.UserService;
 
 @RestController
 @RequestMapping("/api/v1")
-public class LoginRegisterController {
+public class LoginRegisterControllerNeha {
 
 
     @Autowired
@@ -33,7 +33,7 @@ public class LoginRegisterController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    private static final Logger logger = Logger.getLogger(LoginRegisterController.class.getName());;
+    private static final Logger logger = Logger.getLogger(LoginRegisterControllerNeha.class.getName());;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){

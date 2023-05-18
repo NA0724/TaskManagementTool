@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "User")
+@Document(collection = "User")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,5 +27,4 @@ public class User {
     @DocumentReference
     private List<Role> roles;
 
-    
 }
