@@ -18,4 +18,5 @@ public class Attachment {
     private ObjectId id;
     private String attachmentId;
     private String taskId;
+    private User createdBy;
 }
