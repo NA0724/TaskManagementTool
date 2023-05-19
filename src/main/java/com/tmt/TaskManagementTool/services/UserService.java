@@ -38,20 +38,20 @@ public class UserService {
 
     public User updateUser(String username, User user) {
         Optional<User> optUser = userRepository.getUserByUsername(username);
-        User u = optUser.get(); 
-        if(u.getFirstname()!= null) {
+        User u = optUser.get();
+        if (u.getFirstname() != null) {
             u.setFirstname(user.getFirstname());
         }
-        if(u.getLastname()!= null) {
+        if (u.getLastname() != null) {
             u.setLastname(user.getLastname());
         }
-        if(u.getEmail()!= null) {
+        if (u.getEmail() != null) {
             u.setEmail(user.getEmail());
         }
-        if(u.getUsername()!= null) {
+        if (u.getUsername() != null) {
             u.setUsername(user.getUsername());
         }
-        if(u.getPassword()!= null) {
+        if (u.getPassword() != null) {
             u.setPassword(user.getPassword());
         }
         userRepository.save(u);
@@ -63,5 +63,12 @@ public class UserService {
         ObjectId id = user.get().getId();
         userRepository.deleteById(id);
     }
-    
+
+    // public String getUserCreds(String username) {
+    // // User user = new User();
+    // Optional<User> user = userRepository.getUserByUsername(username);
+    // String passWord = user.get().getPassword();
+    // return passWord;
+    // }
+
 }
