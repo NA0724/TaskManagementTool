@@ -1,0 +1,41 @@
+/* dashboard.css */
+
+/* Styling for the AppBar */
+.app-bar {
+	margin-bottom: 16px;
+  }
+  
+  /* Styling for the toolbar */
+  .toolbar {
+	display: flex;
+	align-items: center;
+  }
+  
+  /* Styling for the welcome message */
+  .welcome-message {
+	flex-grow: 1;
+  }
+  
+  /* Styling for the search bar */
+  .search-bar {
+	display: flex;
+	align-items: center;
+	margin-left: 16px;
+  }
+  
+  /* Styling for the navigation drawer */
+  .drawer {
+	width: 250px;
+  }
+  
+  /* Styling for the drawer list items */
+  .drawer-item {
+	display: flex;
+	align-items: center;
+  }
+  
+  /* Styling for the drawer icons */
+  .drawer-icon {
+	margin-right: 8px;
+  }
+  

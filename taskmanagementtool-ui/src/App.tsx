@@ -8,7 +8,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/dashboard/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
 
 const App: React.FC = () => {
