@@ -23,6 +23,7 @@ import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.NotificationService;
 import com.tmt.TaskManagementTool.services.UserService;
+import com.tmt.TaskManagementTool.util.CrudFormsUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.*;
@@ -37,6 +38,9 @@ public class UserController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+	private CrudFormsUtil crudFormsUtil;
     
     /*
      * showAllUsers(): show all users in the database
@@ -49,17 +53,34 @@ public class UserController {
     /*
      * create a new user in the database
      */
-    @GetMapping("/create-user")
-    public ResponseEntity<User> createUser(@RequestBody User user){
-        return new ResponseEntity<User>(userService.createUser(user), HttpStatus.CREATED);
+    @PostMapping("/create-user")
+    public ResponseEntity<User> createUser(@RequestBody String requestBody){
+        ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+			User newUser = crudFormsUtil.createUser(jsonNode);
+            return new ResponseEntity<User>(userService.createUser(newUser), HttpStatus.CREATED);
+        }catch (Exception e) {
+            System.out.println("@>@ Exception occurred in creating new user : " + e); 
+        }
+        return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*
      * search and update a user in the database by id
      */
     @PutMapping("/edit-user/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user){
-        return new ResponseEntity<User>(userService.updateUser(username, user), HttpStatus.OK);
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody String requestBody){
+        Optional<User> user = userService.getUserByUsername(username);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+			crudFormsUtil.updateUserForm(jsonNode, user);
+            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
+        }catch (Exception e) {
+            System.out.println("@>@ Exception occurred in updating user : " + e); 
+        }
+        return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*
@@ -91,7 +112,10 @@ public class UserController {
      */
     @GetMapping("/search-username/{username}")
     public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
-        return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
+        Optional<User> user = userService.getUserByUsername(username);
+        Role role = userService.getRoleByUsername(username);
+        //user.get().setRole(role);
+        return new ResponseEntity<Optional<User>>(user, HttpStatus.OK);
     }
 
      /*
@@ -112,6 +136,11 @@ public class UserController {
         //Optional<Role> role = roleService.getRoleByUser(username);
         //Optional<Permission> permission = permissionService.getPermissionByRole(role);
         return new ResponseEntity<Optional<User>>(HttpStatus.OK);
+    }
+
+    @GetMapping("/role/{username}")
+    public void getUserRole(@PathVariable String username){
+        userService.getRoleByUsername(username);
     }
     
 }

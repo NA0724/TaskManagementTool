@@ -20,5 +20,5 @@ public class Notification {
     private String taskId;
     private String body;
     private String createdAt;
-    private User userId;
+    private String userId;
 }

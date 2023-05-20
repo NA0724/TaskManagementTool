@@ -1,5 +1,6 @@
 package com.tmt.TaskManagementTool.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -22,6 +23,6 @@ public class Role {
     private String rid;
     private String name;
     @DocumentReference
-    private List<Permission> permissions;
+    private List<Permission> permissions = new ArrayList<Permission>();
     
 }
