@@ -20,5 +20,5 @@ public class Comment {
     private String taskId;
     private String body;
     private String createdAt;
-    private User createdBy;
+    private String createdBy;
 }

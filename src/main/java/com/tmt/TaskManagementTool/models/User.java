@@ -1,7 +1,5 @@
 package com.tmt.TaskManagementTool.models;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "User")
+@Document(collection = "User")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +23,6 @@ public class User {
     private String firstname;
     private String lastname;
     @DocumentReference
-    private List<Role> roles;
+    private Role role;
 
-    
 }
