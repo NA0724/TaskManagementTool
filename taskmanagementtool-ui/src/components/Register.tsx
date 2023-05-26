@@ -95,15 +95,16 @@ const Register: React.FC = () => {
   const createUser = async (userData: FormState) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/loginRegister/registerUser",
+        "http://localhost:8080/api/v1/register",
         {
           method: "POST",
           mode: "cors",
-          headers: {
+          headers: new Headers({
             "Content-Type": "application/json",
-          },
+            'Access-Control-Allow-Origin': '*',
+          }),
           body: JSON.stringify(userData),
-        }
+        },
       );
       if (response.ok) {
         const data = await response.json();

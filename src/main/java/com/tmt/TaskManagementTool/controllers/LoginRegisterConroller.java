@@ -1,9 +1,7 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,67 +10,77 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tmt.TaskManagementTool.models.Role;
-import com.tmt.TaskManagementTool.models.User;
-import com.tmt.TaskManagementTool.services.UserService;
-import com.tmt.TaskManagementTool.util.CrudFormsUtil;
+import com.tmt.TaskManagementTool.dtos.ApiResponse;
+import com.tmt.TaskManagementTool.dtos.AuthenticationResponse;
+import com.tmt.TaskManagementTool.dtos.LoginRequestDto;
+import com.tmt.TaskManagementTool.dtos.RegisterRequestDto;
+import com.tmt.TaskManagementTool.services.AuthService;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
+@ComponentScan(basePackages = {"com.tmt.TaskManagementTool.services"})
 public class LoginRegisterConroller {
 
 	@Autowired
-	private UserService userService;
+	private AuthService authService;
 
-	@Autowired
-	private CrudFormsUtil crudFormsUtil;
-
-	@PostMapping("/loginUser")
-	public ResponseEntity<Boolean> getUserByUsername(@RequestBody String requestBody) {
-		// User user = new User();
+	@PostMapping("/login")
+	public ResponseEntity<AuthenticationResponse> getUserByUsername(@RequestBody String requestBody) {
 		System.out.println("@>@" + requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
-		ResponseEntity<Boolean> responseEntity = null;
+		//ResponseEntity<Boolean> responseEntity = null;
 		try {
-
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			String username = jsonNode.get("username").asText();
 			String password = jsonNode.get("password").asText();
 			System.out.println("@>@ em" + username);
 			System.out.println("@>@ pwd" + password);
-			Optional<User> optUser = userService.getUserByUsername(username);
-			User usr = optUser.get();
+			LoginRequestDto loginRequestDto = new LoginRequestDto(username, password);
+			return new ResponseEntity<>(authService.authenticate(loginRequestDto), HttpStatus.OK);
+			/*Optional<User> optUser = userService.getUserByUsername(username);
+			//User usr = optUser.get();
 			if (usr != null && usr.getPassword().equals(password)) {
 				responseEntity = new ResponseEntity<Boolean>(true, HttpStatus.OK);
 				System.out.println(responseEntity);
 			} else {
 				responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
-			}
+			}*/
 		} catch (Exception e) {
 			System.out.println("@>@ E : " + e);
-			responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
 		}
-		return responseEntity;
+		return null;
 	}
 
-	@PostMapping("/registerUser")
-	public ResponseEntity<User> createUser(@RequestBody String requestBody) {
+	@PostMapping("/register")
+	public ResponseEntity<ApiResponse> createUser(@RequestBody String requestBody) {
 		System.out.println("@>@" + requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
-		ResponseEntity<User> responseEntity = null;
+		//dResponseEntity<User> responseEntity = null;
 		try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			User newUser = crudFormsUtil.registerUser(jsonNode);
-			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
-					HttpStatus.CREATED);
+			String email = jsonNode.get("email").asText();
+		  String password = jsonNode.get("password").asText();
+		  String firstName = jsonNode.get("firstname").asText();
+		  String lastName = jsonNode.get("lastname").asText();
+		  String userName = jsonNode.get("username").asText();
+			//User newUser = crudFormsUtil.registerUser(jsonNode);
+		  RegisterRequestDto registerRequestDto = new RegisterRequestDto(userName,firstName,lastName,email,password,password);
+			/*responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
+					HttpStatus.CREATED);*/
+		  if (authService.existsByUserName(registerRequestDto)) {
+						return new ResponseEntity<>(new ApiResponse(400, "Username already exists"), HttpStatus.BAD_REQUEST);
+					}
+			
+					authService.createUser(registerRequestDto);
+					return new ResponseEntity<>(new ApiResponse(200, "User Registration Completed Successfully!!"), HttpStatus.OK);
 		} catch (Exception e) {
 			System.out.println("@>@ E : " + e);
 		}
-		// return new ResponseEntity<String>("Done", HttpStatus.CREATED);
-		return responseEntity;
+		return new ResponseEntity<ApiResponse>(new ApiResponse(404, "Unknown"), HttpStatus.NOT_IMPLEMENTED);
 	}
 
 }

@@ -64,12 +64,13 @@ const Login: React.FC = () => {
   const loginUser = async (userData: FormState) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/loginRegister/loginUser",
+        "http://localhost:8080/api/v1/login",
         {
           method: "POST",
           mode: "cors",
           headers: {
             "Content-Type": "application/json",
+            'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify(userData),
         }
