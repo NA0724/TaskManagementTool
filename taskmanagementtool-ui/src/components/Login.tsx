@@ -64,7 +64,7 @@ const Login: React.FC = () => {
   const loginUser = async (userData: FormState) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/loginRegister/loginUser",
+        "http://localhost:8080/api/v1/loginUser",
         {
           method: "POST",
           mode: "cors",

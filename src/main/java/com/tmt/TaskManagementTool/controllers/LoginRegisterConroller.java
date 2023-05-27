@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.UserService;
-import com.tmt.TaskManagementTool.util.CrudFormsUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,8 +23,6 @@ public class LoginRegisterConroller {
 	@Autowired
 	private UserService userService;
 
-	@Autowired
-	private CrudFormsUtil crudFormsUtil;
 
 	@PostMapping("/loginUser")
 	public ResponseEntity<Boolean> getUserByUsername(@RequestBody String requestBody) {
@@ -61,14 +58,30 @@ public class LoginRegisterConroller {
 		ResponseEntity<User> responseEntity = null;
 		try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			User newUser = crudFormsUtil.registerUser(jsonNode);
+			String email = jsonNode.get("email").asText();
+			String password = jsonNode.get("password").asText();
+			String firstName = jsonNode.get("firstname").asText();
+			String lastName = jsonNode.get("lastname").asText();
+			String userName = jsonNode.get("username").asText();
+
+			User newUser = new User();
+			newUser.setUsername(userName);
+			newUser.setEmail(email);
+			newUser.setPassword(password);
+			newUser.setFirstname(firstName);
+			newUser.setLastname(lastName);
+			Role role = new Role();
+			newUser.setRole(role);
+
 			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);
 		} catch (Exception e) {
 			System.out.println("@>@ E : " + e);
+
 		}
 		// return new ResponseEntity<String>("Done", HttpStatus.CREATED);
 		return responseEntity;
 	}
+
 
 }
