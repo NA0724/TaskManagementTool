@@ -14,7 +14,10 @@ import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.repositories.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -53,6 +56,7 @@ public class UserService {
         Optional<User> user = userRepository.getUserByUsername(username);
         ObjectId id = user.get().getId();
         userRepository.deleteById(id);
+        log.info("User {} deleted", username);
     }
 
     public Role getRoleByUsername(String username) {
@@ -73,4 +77,12 @@ public class UserService {
     // return passWord;
     // }
 
+    
+    /*protected User getCurrentUser() {
+        if (user == null) {
+            user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getName());
+        }
+        return user;
+    }*/
+    
 }

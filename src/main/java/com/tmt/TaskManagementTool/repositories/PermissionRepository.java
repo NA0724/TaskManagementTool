@@ -14,4 +14,5 @@ public interface PermissionRepository extends MongoRepository<Permission, Object
     Optional<Permission> getPermissionById(String id);
     Optional<Permission> getPermissionByPid(String pid);
     Optional<Permission> getPermissionByName(String name); 
+    boolean existsPermissionByName(String name);
 }

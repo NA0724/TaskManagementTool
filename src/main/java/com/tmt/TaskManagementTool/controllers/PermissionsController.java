@@ -35,9 +35,9 @@ public class PermissionsController {
     /*
      * create a new user in the database
      */
-    @GetMapping("/create-Permission")
-    public ResponseEntity<Permission> createPermission(@RequestBody Permission permission){
-        return new ResponseEntity<Permission>(permissionService.createPermission(permission), HttpStatus.CREATED);
+    @GetMapping("/create-Permission/{rid}")
+    public ResponseEntity<Permission> createPermission(@RequestBody Permission permission, String rid){
+        return new ResponseEntity<Permission>(permissionService.createPermissionForRole(permission, rid), HttpStatus.CREATED);
     }
 
     /*

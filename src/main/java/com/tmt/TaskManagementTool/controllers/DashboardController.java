@@ -16,6 +16,7 @@ public class DashboardController {
     
     @GetMapping
     public String getDashboardPage(){
+        //TODO call the methods for dashboard - all tasks by status for user and count of tasks
         return "dashboard";
     }
 
