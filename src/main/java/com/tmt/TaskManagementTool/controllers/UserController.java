@@ -23,7 +23,6 @@ import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.NotificationService;
 import com.tmt.TaskManagementTool.services.UserService;
-import com.tmt.TaskManagementTool.util.CrudFormsUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.*;
@@ -38,9 +37,6 @@ public class UserController {
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-	private CrudFormsUtil crudFormsUtil;
     
     /*
      * showAllUsers(): show all users in the database
@@ -58,7 +54,7 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			User newUser = crudFormsUtil.createUser(jsonNode);
+			User newUser = new User();
             return new ResponseEntity<User>(userService.createUser(newUser), HttpStatus.CREATED);
         }catch (Exception e) {
             System.out.println("@>@ Exception occurred in creating new user : " + e); 
@@ -75,7 +71,7 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			crudFormsUtil.updateUserForm(jsonNode, user);
+			// TODO update form
             return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
         }catch (Exception e) {
             System.out.println("@>@ Exception occurred in updating user : " + e); 
