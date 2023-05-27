@@ -82,6 +82,14 @@ db.getCollection('Role').insertMany([
       {
         'pid': 'P1',
         'name': 'Create User'
+      },
+      { 
+        'pid': 'P2', 
+        'name': 'Update User' 
+      },
+      { 
+        'pid': 'P3', 
+        'name': 'Delete User' 
       }],
     },
   ]);
@@ -89,7 +97,7 @@ db.Role.createIndex( { "rid": 1, "name": 1} , {unique: true, required : true} )
 
 
 // Insert a few documents into the sales collection.
-db.getCollection('Permission').insertMany([
+/*db.getCollection('Permission').insertMany([
   { 
     'pid': 'P1', 
     'name': 'Create User'
@@ -103,7 +111,7 @@ db.getCollection('Permission').insertMany([
     'name': 'Delete User' 
   },
 ]);
-db.Permission.createIndex( { "pid": 1, "name": 1 } , { unique: true, required : true} )
+db.Permission.createIndex( { "pid": 1, "name": 1 } , { unique: true, required : true} )*/
 
 db.getCollection('Comment').insertMany([
   { 

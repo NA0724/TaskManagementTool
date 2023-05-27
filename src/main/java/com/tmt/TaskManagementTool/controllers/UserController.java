@@ -1,6 +1,5 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ import com.tmt.TaskManagementTool.services.UserService;
 import com.tmt.TaskManagementTool.util.CrudFormsUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -71,12 +69,13 @@ public class UserController {
      */
     @PutMapping("/edit-user/{username}")
     public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody String requestBody){
-        Optional<User> user = userService.getUserByUsername(username);
+        User user = userService.getUserByUsername(username);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			crudFormsUtil.updateUserForm(jsonNode, user);
-            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
+            userService.updateUser(user);
+            return new ResponseEntity<User>(HttpStatus.OK);
         }catch (Exception e) {
             System.out.println("@>@ Exception occurred in updating user : " + e); 
         }
@@ -111,11 +110,11 @@ public class UserController {
      * search and get a user in the database by username
      */
     @GetMapping("/search-username/{username}")
-    public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username){
-        Optional<User> user = userService.getUserByUsername(username);
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username){
+        User user = userService.getUserByUsername(username);
         Role role = userService.getRoleByUsername(username);
         //user.get().setRole(role);
-        return new ResponseEntity<Optional<User>>(user, HttpStatus.OK);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
      /*
@@ -131,7 +130,7 @@ public class UserController {
      */
     @GetMapping("/myprofile")
     public ResponseEntity<Optional<User>> getMyProfilePage(@PathVariable String username){
-        Optional<User> user = userService.getUserByUsername(username);
+        userService.getUserByUsername(username);
         // TODO create query for the following methods
         //Optional<Role> role = roleService.getRoleByUser(username);
         //Optional<Permission> permission = permissionService.getPermissionByRole(role);
@@ -139,8 +138,35 @@ public class UserController {
     }
 
     @GetMapping("/role/{username}")
-    public void getUserRole(@PathVariable String username){
+    public void getUserRole(@PathVariable String username, @RequestBody String requestBody){
         userService.getRoleByUsername(username);
     }
+
+    @PostMapping("/create-role")
+    public void createUserRole(@PathVariable String username, @RequestBody String requestBody){
+        // TODO remove path variable parameter and get current user from spring session
+        Role role = new Role();
+        ObjectMapper objectMapper = new ObjectMapper();
+		//ResponseEntity<User> responseEntity = null;
+        try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            String rid = jsonNode.get("rid").asText(requestBody);
+            String name = jsonNode.get("name").asText(requestBody);
+            //TODO get list of permissions created for the role
+            //List<String> permissions = new  
+
+            role.setRid(rid);
+            role.setName(name);
+        
+            User user = userService.getUserByUsername(username);
+            user.setRole(role);
+            userService.updateUser(user);
+    } catch (Exception e) {
+        System.out.println("@>@ E : " + e);
+        //responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
     
+    }
+}  
+
+
 }

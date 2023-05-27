@@ -1,8 +1,6 @@
 package com.tmt.TaskManagementTool.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +30,7 @@ public class UserTaskService {
     public List<Task> getAllTasksCreatedByUser(String username){
         // TODO fetch user from current session
         //check code in userservice
-        Optional<User> userOptional = userService.getUserByUsername(username);
-        User user = userOptional.orElseThrow(()-> new IllegalArgumentException("User Not Found"));
+        User user = userService.getUserByUsername(username);
         
        List<Task> allTasks = taskRepository.findTasksByCreatedBy(user.getUsername());
         log.info("found tasks for user " + user.getUsername());
@@ -43,8 +40,7 @@ public class UserTaskService {
     public List<Task> getAllTasksAssignedToUser(String username){
         // TODO fetch user from current session
         //check code in userservice
-        Optional<User> userOptional = userService.getUserByUsername(username);
-        User user = userOptional.orElseThrow(()-> new IllegalArgumentException("User Not Found"));
+        User user = userService.getUserByUsername(username);
         
        List<Task> allTasks = taskRepository.findTasksByAssignedTo(user.getUsername());
         log.info("found tasks for user " + user.getUsername());
@@ -60,8 +56,7 @@ public class UserTaskService {
             }
         }*/
 
-        Optional<User> userOptional = userService.getUserByUsername(username);
-        User user = userOptional.orElseThrow(()-> new IllegalArgumentException("User Not Found"));
+        User user = userService.getUserByUsername(username);
 
         List<Task> alltasksByStatus = taskRepository.findTasksByStatus(status);
         alltasksByStatus.stream().filter(t -> t.getCreatedBy().equalsIgnoreCase(user.getUsername()))

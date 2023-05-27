@@ -38,18 +38,18 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.getUserByUsername(username);
+    public User getUserByUsername(String username) {
+        Optional<User> userOptional = userRepository.getUserByUsername(username);
+        User user = userOptional.orElseThrow(()->new IllegalStateException("No user found with username: " + username));
+        return user;
     }
 
     public User createUser(User user) {
         return userRepository.insert(user);
     }
 
-    public User updateUser(Optional<User> user) {
-        User u = user.get();
-        userRepository.save(u);
-        return u;
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public void deleteUser(String username) {

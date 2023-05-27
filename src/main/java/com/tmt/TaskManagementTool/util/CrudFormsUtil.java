@@ -27,7 +27,7 @@ public class CrudFormsUtil {
         return user;	
     }
 
-    public Optional<User> updateUserForm(JsonNode jsonNode, Optional<User> user){
+    public User updateUserForm(JsonNode jsonNode, User user){
       String email = jsonNode.get("email").asText();
 		  String password = jsonNode.get("password").asText();
 		  String firstName = jsonNode.get("firstname").asText();
@@ -36,15 +36,15 @@ public class CrudFormsUtil {
       String roleid = jsonNode.get("roleid").asText();
       String roleName = jsonNode.get("rolename").asText();
       //TODO update permissions
-      user.get().setEmail(email);
-      user.get().setFirstname(firstName);
-      user.get().setLastname(lastName);
-      user.get().setUsername(userName);
-      user.get().setPassword(password);
-      Role role = user.get().getRole();
+      user.setEmail(email);
+      user.setFirstname(firstName);
+      user.setLastname(lastName);
+      user.setUsername(userName);
+      user.setPassword(password);
+      Role role = user.getRole();
       //role.setRid(roleid);
       //role.setName(roleName);
-      user.get().setRole(role);
+      user.setRole(role);
       return user;
 
     }
