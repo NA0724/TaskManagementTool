@@ -1,8 +1,5 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,8 +36,7 @@ public class LoginRegisterConroller {
 			String password = jsonNode.get("password").asText();
 			System.out.println("@>@ em" + username);
 			System.out.println("@>@ pwd" + password);
-			Optional<User> optUser = userService.getUserByUsername(username);
-			User usr = optUser.get();
+			User usr= userService.getUserByUsername(username);
 			if (usr != null && usr.getPassword().equals(password)) {
 				responseEntity = new ResponseEntity<Boolean>(true, HttpStatus.OK);
 				System.out.println(responseEntity);
@@ -74,8 +69,8 @@ public class LoginRegisterConroller {
 			newUser.setPassword(password);
 			newUser.setFirstname(firstName);
 			newUser.setLastname(lastName);
-			Role role = new Role();
-			newUser.setRole(role);
+			//Role role = new Role();
+			//newUser.setRole(role);
 
 			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);
@@ -86,6 +81,5 @@ public class LoginRegisterConroller {
 		// return new ResponseEntity<String>("Done", HttpStatus.CREATED);
 		return responseEntity;
 	}
-
 
 }

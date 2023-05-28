@@ -14,7 +14,10 @@ import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.repositories.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -35,24 +38,25 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.getUserByUsername(username);
+    public User getUserByUsername(String username) {
+        Optional<User> userOptional = userRepository.getUserByUsername(username);
+        User user = userOptional.orElseThrow(()->new IllegalStateException("No user found with username: " + username));
+        return user;
     }
 
     public User createUser(User user) {
         return userRepository.insert(user);
     }
 
-    public User updateUser(Optional<User> user) {
-        User u = user.get();
-        userRepository.save(u);
-        return u;
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public void deleteUser(String username) {
         Optional<User> user = userRepository.getUserByUsername(username);
         ObjectId id = user.get().getId();
         userRepository.deleteById(id);
+        log.info("User {} deleted", username);
     }
 
     public Role getRoleByUsername(String username) {
@@ -73,4 +77,20 @@ public class UserService {
     // return passWord;
     // }
 
+    
+    /*protected User getCurrentUser() {
+        if (user == null) {
+            user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getName());
+        }
+        return user;
+    }*/
+
+    /**
+     * public Role getRoleByUsername(String username){
+        Optional<User> user = userRepository.getUserByUsername(username);
+        return null;
+        
+    }
+     */
+    
 }

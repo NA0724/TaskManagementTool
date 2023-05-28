@@ -22,7 +22,6 @@ public class Role {
     private ObjectId id;
     private String rid;
     private String name;
-    @DocumentReference
-    private List<Permission> permissions = new ArrayList<Permission>();
+    private List<Permission> permissions;
     
 }
