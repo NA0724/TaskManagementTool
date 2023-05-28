@@ -16,9 +16,7 @@ public class Notification {
     
     @Id
     private ObjectId id;
-    private String notificationId;
     private String taskId;
     private String body;
-    private String createdAt;
     private String userId;
 }

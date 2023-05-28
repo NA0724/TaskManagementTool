@@ -84,5 +84,13 @@ public class UserService {
         }
         return user;
     }*/
+
+    /**
+     * public Role getRoleByUsername(String username){
+        Optional<User> user = userRepository.getUserByUsername(username);
+        return null;
+        
+    }
+     */
     
 }

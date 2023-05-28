@@ -1,5 +1,7 @@
 package com.tmt.TaskManagementTool.util;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -8,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 
-@Component("crudFormsUtil")
-public class CrudFormsUtil {
+@Component("genericUtil")
+public class GenericUtil {
 
     public User registerUser(JsonNode jsonNode){
 		return newUserForm(jsonNode);	
@@ -68,4 +70,10 @@ public class CrudFormsUtil {
 		  newUser.setLastname(lastName);
       return newUser;
 	  }
+
+    public String getCurrentDateTime(){
+      LocalDateTime dateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+        return dateTime.format(formatter);
+    }
 }

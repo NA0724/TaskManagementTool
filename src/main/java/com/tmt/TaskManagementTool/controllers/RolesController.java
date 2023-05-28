@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tmt.TaskManagementTool.models.Permission;
 import com.tmt.TaskManagementTool.models.Role;
+import com.tmt.TaskManagementTool.services.PermissionService;
 import com.tmt.TaskManagementTool.services.RoleService;
 
 
@@ -22,11 +24,15 @@ import com.tmt.TaskManagementTool.services.RoleService;
 @RestController
 @RequestMapping("/api/v1/roles")
 public class RolesController {
+    
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private PermissionService permissionService;
+
     /*
-     * showAllUsers(): show all users in the database
+     * showAllUsers(): show all roles in the database
      */
     @GetMapping
     public ResponseEntity<List<Role>> showAllRoles(){
@@ -34,15 +40,7 @@ public class RolesController {
     }
 
     /*
-     * create a new user in the database
-     */
-    @GetMapping("/create-role")
-    public ResponseEntity<Role> createRole(@RequestBody Role role){
-        return new ResponseEntity<Role>(roleService.createRole(role), HttpStatus.CREATED);
-    }
-
-    /*
-     * search and update a user in the database by id
+     * search and update a role in the database 
      */
     @PutMapping("/edit-role/{name}")
     public ResponseEntity<Role> updateRole(@PathVariable String name, @RequestBody Role role){
@@ -50,26 +48,27 @@ public class RolesController {
     }
 
     /*
-     * delete a user in the database by username
+     * delete a role in the database by username
      */
     @GetMapping("/delete-role/{name}")
     public void deleteRole(@PathVariable String name){
         roleService.deleteRole(name);
     }
 
-      /*
-     * search and get a user in the database by id
+    /*
+     * create a new permission for in the database
      */
-    @GetMapping("/search-id/{id}")
-    public ResponseEntity<Optional<Role>> getRoleById(@PathVariable ObjectId id){
-        return new ResponseEntity<Optional<Role>>(roleService.getRoleById(id),HttpStatus.OK) ;
-    }
-    
-    @GetMapping("/search-role/{rid}")
-    public ResponseEntity<Optional<Role>> getRoleByRid(@PathVariable String rid){
-        return new ResponseEntity<Optional<Role>>(roleService.getRoleByRid(rid),HttpStatus.OK) ;
+    @GetMapping("/create-Permission/{rid}")
+    public ResponseEntity<Permission> createPermission(@RequestBody Permission permission, String rid){
+        return new ResponseEntity<Permission>(permissionService.createPermissionForRole(permission, rid), HttpStatus.CREATED);
     }
 
-
+    /*
+     * delete a user in the database by username
+     */
+    @GetMapping("/delete-Permission/{pid}")
+    public void deletePermission(@PathVariable String pid){
+        permissionService.deletePermission(pid);
+    }
     
 }

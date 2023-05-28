@@ -16,11 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
-import com.tmt.TaskManagementTool.services.NotificationService;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,9 +30,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private NotificationService notificationService;
-    
     /*
      * showAllUsers(): show all users in the database
      */
@@ -69,7 +63,6 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			//crudFormsUtil.updateUserForm(jsonNode, user);
             userService.updateUser(user);
             return new ResponseEntity<User>(HttpStatus.OK);
 			// TODO update form
@@ -109,30 +102,10 @@ public class UserController {
     @GetMapping("/search-username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username){
         User user = userService.getUserByUsername(username);
-        Role role = userService.getRoleByUsername(username);
         //user.get().setRole(role);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
-     /*
-     * get all notifications from the database for user
-     */
-    @GetMapping("/notifications")
-    public ResponseEntity<List<Notification>> getAllNotificationForUser(@PathVariable String username){
-        return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username), HttpStatus.OK);
-    }
-
-    /*
-     * get all notifications from the database for user
-     */
-    @GetMapping("/myprofile")
-    public ResponseEntity<Optional<User>> getMyProfilePage(@PathVariable String username){
-        userService.getUserByUsername(username);
-        // TODO create query for the following methods
-        //Optional<Role> role = roleService.getRoleByUser(username);
-        //Optional<Permission> permission = permissionService.getPermissionByRole(role);
-        return new ResponseEntity<Optional<User>>(HttpStatus.OK);
-    }
 
     @GetMapping("/role/{username}")
     public void getUserRole(@PathVariable String username, @RequestBody String requestBody){

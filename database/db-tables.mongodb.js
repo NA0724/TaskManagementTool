@@ -72,6 +72,7 @@ db.getCollection('User').insertMany([
 ]);
 db.User.createIndex( { "username": 1, "email": 1 } , { unique: true , required : true} )
 
+db.createCollection('permissions');
 
 // Insert a few documents into the sales collection.
 db.getCollection('Role').insertMany([
@@ -94,6 +95,7 @@ db.getCollection('Role').insertMany([
     },
   ]);
 db.Role.createIndex( { "rid": 1, "name": 1} , {unique: true, required : true} )
+
 
 
 // Insert a few documents into the sales collection.
@@ -125,23 +127,13 @@ db.getCollection('Comment').insertMany([
 db.Comment.createIndex( { "commentId": 1, "taskId": 1 } , { unique: true , required : true} )
 
 db.getCollection('Notification').insertMany([
-  { 
-    'notificationId': 'N1', 
+  {  
     'taskId': 'T1', 
     'body':'test notification', 
     'userId': 'nraj'
   },
 ]);
 db.Notification.createIndex( { "notificationId": 1, "userId": 1, "taskId": 1} , { unique: true , required : true} )
-
-db.getCollection('Attachment').insertMany([
-  { 
-    'attachmentId': 'A1', 
-    'taskId': 'T1', 
-    'createdBy': 'nraj'
-  },
-]);
-db.Attachment.createIndex( { "attachmentId": 1, "taskId": 1 } , { unique: true , required : true} )
 
 
 db.getCollection('Task').insertMany([
@@ -153,6 +145,7 @@ db.getCollection('Task').insertMany([
     'status': 'In progress',
     'priority': 'High',
     'createdBy': 'nraj',
+    'createdAt': '2023-05-13',
     'assignedTo': 'pbuf',
     'assignedBy': 'smong',
     'assignedDate': '2023-05-13',
@@ -172,9 +165,7 @@ db.getCollection('Task').insertMany([
     ],
     'attachments' : [
       {
-        'attachmentId': 'A1', 
-         'taskId': 'T1', 
-         'createdBy': 'nraj'
+        'attachmentId': 'A1'
       }
     ]
 },

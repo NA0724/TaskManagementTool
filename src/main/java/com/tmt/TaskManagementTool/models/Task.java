@@ -1,5 +1,6 @@
 package com.tmt.TaskManagementTool.models;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,8 +27,9 @@ public class Task {
     private String description;
     private String status;
     private String priority;
-    private String dueDate;
+    private LocalDate dueDate;
     private String createdBy;
+    private String createdAt;
     private String assignedTo;
     private String assignedBy;
     private String assignedDate;
@@ -36,7 +39,7 @@ public class Task {
     private String taskCategory;
     @DocumentReference
     private List<Comment> comments = new ArrayList<Comment>();
-    @DocumentReference
-    private List<Attachment> attachments = new ArrayList<Attachment>();
+
+    List<MultipartFile> attachments;
     
 }

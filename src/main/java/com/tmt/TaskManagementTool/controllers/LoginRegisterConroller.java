@@ -1,6 +1,5 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,8 +69,8 @@ public class LoginRegisterConroller {
 			newUser.setPassword(password);
 			newUser.setFirstname(firstName);
 			newUser.setLastname(lastName);
-			Role role = new Role();
-			newUser.setRole(role);
+			//Role role = new Role();
+			//newUser.setRole(role);
 
 			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);
@@ -82,6 +81,5 @@ public class LoginRegisterConroller {
 		// return new ResponseEntity<String>("Done", HttpStatus.CREATED);
 		return responseEntity;
 	}
-
 
 }
