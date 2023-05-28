@@ -20,7 +20,9 @@ public class TaskReminder {
     private NotificationService notificationService;
 
     @Scheduled(cron = "0 0 9 * * *") // Run every day at 9 AM
-    public void sendTaskReminders(String username) {
+    public void sendTaskReminders() {
+        //TODO get current user information
+        String username = "";
         List<Task> tasks = taskService.getAllTasksAssignedToUser(username);
         for (Task task : tasks) {
             if (task.getStatus().equalsIgnoreCase("New") && taskService.isTaskDue(task)) {
