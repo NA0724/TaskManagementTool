@@ -1,27 +1,22 @@
 package com.tmt.TaskManagementTool.models;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document( collection = "Role")
+@Document( collection = "Notification")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Role {
-
+public class Notification {
+    
     @Id
     private ObjectId id;
-    private String rid;
-    private String name;
-    private List<Permission> permissions;
-    
+    private String taskId;
+    private String body;
+    private String userId;
 }

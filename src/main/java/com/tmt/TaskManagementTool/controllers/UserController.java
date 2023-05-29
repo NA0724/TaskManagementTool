@@ -1,6 +1,5 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +21,6 @@ import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -43,49 +41,102 @@ public class UserController {
     /*
      * create a new user in the database
      */
-    @PostMapping("/createUser")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return new ResponseEntity<User>(userService.createUser(user), HttpStatus.CREATED);
+    @PostMapping("/create-user")
+    public ResponseEntity<User> createUser(@RequestBody String requestBody){
+        ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+			User newUser = new User();
+            return new ResponseEntity<User>(userService.createUser(newUser), HttpStatus.CREATED);
+        }catch (Exception e) {
+            System.out.println("@>@ Exception occurred in creating new user : " + e); 
+        }
+        return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /*
+     * search and update a user in the database by id
+     */
+    @PutMapping("/edit-user/{username}")
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody String requestBody){
+        User user = userService.getUserByUsername(username);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            userService.updateUser(user);
+            return new ResponseEntity<User>(HttpStatus.OK);
+			// TODO update form
+        }catch (Exception e) {
+            System.out.println("@>@ Exception occurred in updating user : " + e); 
+        }
+        return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /*
+     * delete a user in the database by username
+     */
+    @GetMapping("/delete-user/{username}")
+    public void deleteUser(@PathVariable String username){
+        userService.deleteUser(username);
+    }
+
+      /*
      * search and get a user in the database by id
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id) {
-        return new ResponseEntity<Optional<User>>(userService.getUserById(id), HttpStatus.OK);
+    @GetMapping("/search-id/{id}")
+    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id){
+        return new ResponseEntity<Optional<User>>(userService.getUserById(id),HttpStatus.OK) ;
     }
 
     /*
      * search and get a user in the database by email
      */
-    @GetMapping("/getUserByEmail/{email}")
-    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email) {
+    @GetMapping("/search-email/{email}")
+    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email){
         return new ResponseEntity<Optional<User>>(userService.getUserByEmail(email), HttpStatus.OK);
     }
 
     /*
      * search and get a user in the database by username
      */
-    @GetMapping("/search/{username}")
-    public ResponseEntity<Optional<User>> getUserByUsername(@PathVariable String username) {
-        return new ResponseEntity<Optional<User>>(userService.getUserByUsername(username), HttpStatus.OK);
+    @GetMapping("/search-username/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username){
+        User user = userService.getUserByUsername(username);
+        //user.get().setRole(role);
+        return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
-    /*
-     * search and update a user in the database by id
-     */
-    @PutMapping("/update/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user) {
-        return new ResponseEntity<User>(userService.updateUser(username, user), HttpStatus.OK);
+
+    @GetMapping("/role/{username}")
+    public void getUserRole(@PathVariable String username, @RequestBody String requestBody){
+        userService.getRoleByUsername(username);
     }
 
-    /*
-     * delete a user in the database by username
-     */
-    @GetMapping("/delete/{username}")
-    public void deleteUser(@PathVariable String username) {
-        userService.deleteUser(username);
+    @PostMapping("/create-role")
+    public void createUserRole(@PathVariable String username, @RequestBody String requestBody){
+        // TODO remove path variable parameter and get current user from spring session
+        Role role = new Role();
+        ObjectMapper objectMapper = new ObjectMapper();
+		//ResponseEntity<User> responseEntity = null;
+        try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            String rid = jsonNode.get("rid").asText(requestBody);
+            String name = jsonNode.get("name").asText(requestBody);
+            //TODO get list of permissions created for the role
+            //List<String> permissions = new  
+
+            role.setRid(rid);
+            role.setName(name);
+        
+            User user = userService.getUserByUsername(username);
+            user.setRole(role);
+            userService.updateUser(user);
+    } catch (Exception e) {
+        System.out.println("@>@ E : " + e);
+        //responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
+    
     }
+}  
+
 
 }

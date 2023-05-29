@@ -6,12 +6,18 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.repositories.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -32,42 +38,36 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.getUserByUsername(username);
+    public User getUserByUsername(String username) {
+        Optional<User> userOptional = userRepository.getUserByUsername(username);
+        User user = userOptional.orElseThrow(()->new IllegalStateException("No user found with username: " + username));
+        return user;
     }
 
     public User createUser(User user) {
-        // User user = new User();
-        // userRepository.save(user);
         return userRepository.insert(user);
     }
 
-    public User updateUser(String username, User user) {
-        Optional<User> optUser = userRepository.getUserByUsername(username);
-        User u = optUser.get();
-        if (u.getFirstname() != null) {
-            u.setFirstname(user.getFirstname());
-        }
-        if (u.getLastname() != null) {
-            u.setLastname(user.getLastname());
-        }
-        if (u.getEmail() != null) {
-            u.setEmail(user.getEmail());
-        }
-        if (u.getUsername() != null) {
-            u.setUsername(user.getUsername());
-        }
-        if (u.getPassword() != null) {
-            u.setPassword(user.getPassword());
-        }
-        userRepository.save(u);
-        return u;
+    public void updateUser(User user) {
+        userRepository.save(user);
     }
 
     public void deleteUser(String username) {
         Optional<User> user = userRepository.getUserByUsername(username);
         ObjectId id = user.get().getId();
         userRepository.deleteById(id);
+        log.info("User {} deleted", username);
+    }
+
+    public Role getRoleByUsername(String username) {
+        Query query1 = new Query(Criteria.where("username").is(username));
+        User user = mongoTemplate.findOne(query1, User.class);
+        if (user != null){
+            Role role = user.getRole();
+            //role.getPermissions();
+            return role;
+        }
+        return null;
     }
 
     // public String getUserCreds(String username) {
@@ -77,4 +77,20 @@ public class UserService {
     // return passWord;
     // }
 
+    
+    /*protected User getCurrentUser() {
+        if (user == null) {
+            user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getName());
+        }
+        return user;
+    }*/
+
+    /**
+     * public Role getRoleByUsername(String username){
+        Optional<User> user = userRepository.getUserByUsername(username);
+        return null;
+        
+    }
+     */
+    
 }

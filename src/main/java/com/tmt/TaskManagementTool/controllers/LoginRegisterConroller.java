@@ -1,35 +1,27 @@
 package com.tmt.TaskManagementTool.controllers;
 
-import java.util.Optional;
-import java.util.ArrayList;
-import java.util.List;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.UserService;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.*;
 
 @RestController
-@RequestMapping("/api/v1/loginRegister")
+@RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 public class LoginRegisterConroller {
 
 	@Autowired
 	private UserService userService;
+
 
 	@PostMapping("/loginUser")
 	public ResponseEntity<Boolean> getUserByUsername(@RequestBody String requestBody) {
@@ -44,8 +36,7 @@ public class LoginRegisterConroller {
 			String password = jsonNode.get("password").asText();
 			System.out.println("@>@ em" + username);
 			System.out.println("@>@ pwd" + password);
-			Optional<User> optUser = userService.getUserByUsername(username);
-			User usr = optUser.get();
+			User usr= userService.getUserByUsername(username);
 			if (usr != null && usr.getPassword().equals(password)) {
 				responseEntity = new ResponseEntity<Boolean>(true, HttpStatus.OK);
 				System.out.println(responseEntity);
@@ -78,8 +69,8 @@ public class LoginRegisterConroller {
 			newUser.setPassword(password);
 			newUser.setFirstname(firstName);
 			newUser.setLastname(lastName);
-			List<Role> list = new ArrayList<>();
-			newUser.setRoles(list);
+			//Role role = new Role();
+			//newUser.setRole(role);
 
 			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);
