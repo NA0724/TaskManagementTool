@@ -76,7 +76,13 @@ const Login: React.FC = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        return { success: true, data };
+        const auth = response.headers.get('Authorization');
+        if (auth) {
+          localStorage.setItem('auth', auth); // Store the auth value in local storage
+          return { success: true, data };
+        }else{
+          return { success:false, data };
+        }
       } else {
         const error = await response.text();
         return { success: false, error };

@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +17,18 @@ import com.tmt.TaskManagementTool.dtos.DasboardData;
 import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Task;
 import com.tmt.TaskManagementTool.models.User;
+import com.tmt.TaskManagementTool.services.AuthService;
 import com.tmt.TaskManagementTool.services.NotificationService;
 import com.tmt.TaskManagementTool.services.TaskService;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.tmt.TaskManagementTool.util.GeneratePdfReportUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/v1/home")
+@Slf4j
 public class DashboardController {
 
 
@@ -36,10 +43,31 @@ public class DashboardController {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+	private AuthService authService;
+    
+    
+    public ResponseEntity<String> getDashboard(HttpServletRequest request){
+        String auth = request.getParameter("Authorization");
+        log.info(auth);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", auth);
+        ResponseEntity<String> responseEntity;
+        responseEntity = ResponseEntity.ok().headers(headers).body("dashboard");
+        User user = authService.getCurrentUser(auth);
+        log.info(user.getFirstname()+" " +user.getLastname() + " has logged in successfully");
+        return responseEntity;
+    }
     
     @GetMapping("/dashboard")
-    public ResponseEntity<DasboardData> getDashboardPage(String username){
+    public ResponseEntity<DasboardData> getDashboardPage(HttpServletRequest request, String username){
         //TODO call the methods for dashboard - all tasks by status for user and count of tasks
+
+        //get https header from request
+        String auth = request.getParameter("Authorization");
+        User user = authService.getCurrentUser(auth);
+        log.info(user.getFirstname()+" " +user.getLastname() + " has logged in successfully");
         ObjectMapper objectMapper = new ObjectMapper();
         DasboardData dashboardData = new DasboardData();
         //JSONObject jsonObject = objectMapper.writeValueAsString(objectMapper)
