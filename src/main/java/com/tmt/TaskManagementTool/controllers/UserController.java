@@ -107,11 +107,6 @@ public class UserController {
     }
 
 
-    @GetMapping("/role/{username}")
-    public void getUserRole(@PathVariable String username, @RequestBody String requestBody){
-        userService.getRoleByUsername(username);
-    }
-
     @PostMapping("/create-role")
     public void createUserRole(@PathVariable String username, @RequestBody String requestBody){
         // TODO remove path variable parameter and get current user from spring session

@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -22,9 +21,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -59,16 +55,6 @@ public class UserService {
         log.info("User {} deleted", username);
     }
 
-    public Role getRoleByUsername(String username) {
-        Query query1 = new Query(Criteria.where("username").is(username));
-        User user = mongoTemplate.findOne(query1, User.class);
-        if (user != null){
-            Role role = user.getRole();
-            //role.getPermissions();
-            return role;
-        }
-        return null;
-    }
 
     // public String getUserCreds(String username) {
     // // User user = new User();
@@ -85,12 +71,6 @@ public class UserService {
         return user;
     }*/
 
-    /**
-     * public Role getRoleByUsername(String username){
-        Optional<User> user = userRepository.getUserByUsername(username);
-        return null;
-        
-    }
-     */
+   
     
 }
