@@ -52,6 +52,7 @@ const Login: React.FC = () => {
       if (response.success) {
         // Redirect to the login page if createUser is successful
         navigate("/dashboard");
+        console.log("Session Value:", response.sessionValue);
       } else {
         setError("Invalid username or password. Couldnt login!");
         console.error("User login failed:", response.error);
@@ -76,13 +77,9 @@ const Login: React.FC = () => {
       );
       if (response.ok) {
         const data = await response.json();
-        const auth = response.headers.get('Authorization');
-        if (auth) {
-          localStorage.setItem('auth', auth); // Store the auth value in local storage
-          return { success: true, data };
-        }else{
-          return { success:false, data };
-        }
+        const sessionValue = data.sessionValue;
+        sessionStorage.setItem('user', sessionValue);
+        return { success: true, sessionValue };
       } else {
         const error = await response.text();
         return { success: false, error };

@@ -144,5 +144,9 @@ public class TaskService {
         LocalDate today = LocalDate.now();
         return task.getDueDate().isEqual(today) || task.getDueDate().isBefore(today.plusDays(1));
     }
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
+    }
     
 }

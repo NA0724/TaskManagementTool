@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,8 @@ import com.tmt.TaskManagementTool.services.UserService;
 import com.tmt.TaskManagementTool.util.GeneratePdfReportUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -48,30 +51,20 @@ public class DashboardController {
 	private AuthService authService;
     
     
-    public ResponseEntity<String> getDashboard(HttpServletRequest request){
-        String auth = request.getParameter("Authorization");
-        log.info(auth);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", auth);
-        ResponseEntity<String> responseEntity;
-        responseEntity = ResponseEntity.ok().headers(headers).body("dashboard");
-        User user = authService.getCurrentUser(auth);
+    @RequestMapping(value="/dashboard", method = RequestMethod.GET, produces = "application/text")
+    public ResponseEntity<DasboardData> getDashboardPage(HttpSession session){
+        String username = session.getAttribute("user").toString();
+        User user = userService.getUserByUsername(username);
         log.info(user.getFirstname()+" " +user.getLastname() + " has logged in successfully");
-        return responseEntity;
-    }
-    
-    @GetMapping("/dashboard")
-    public ResponseEntity<DasboardData> getDashboardPage(HttpServletRequest request, String username){
-        //TODO call the methods for dashboard - all tasks by status for user and count of tasks
-
-        //get https header from request
-        String auth = request.getParameter("Authorization");
-        User user = authService.getCurrentUser(auth);
-        log.info(user.getFirstname()+" " +user.getLastname() + " has logged in successfully");
+        
         ObjectMapper objectMapper = new ObjectMapper();
         DasboardData dashboardData = new DasboardData();
-        //JSONObject jsonObject = objectMapper.writeValueAsString(objectMapper)
+
         List<Task> tasks = taskService.getAllTasksAssignedToUser(username);
+        if (user.getRole().getName().equalsIgnoreCase("Manager")){
+            List<Task> createdTasks = taskService.getAllTasksCreatedByUser(username);
+            dashboardData.setTasksCreatedBy(createdTasks);
+        }
         List<Notification> notifications = notificationService.getAllNotificationsByUserId(username);
         int newTasksCount = taskService.countTaskByStatus("New");
         int inProgressTasksCount = taskService.countTaskByStatus("In Progress");
@@ -79,7 +72,7 @@ public class DashboardController {
         dashboardData.setNewTaskCount(newTasksCount);
         dashboardData.setCompletedTasksCount(completedTasksCount);
         dashboardData.setInProgressTasksCount(inProgressTasksCount);
-        dashboardData.setTasks(tasks);
+        dashboardData.setTasksAssignedTo(tasks);
         dashboardData.setNotifications(notifications);
         return new ResponseEntity<DasboardData>(dashboardData, HttpStatus.OK);
     }
@@ -102,6 +95,16 @@ public class DashboardController {
     @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getAllNotificationForUser(String username){
         return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username), HttpStatus.OK);
+    }
+
+    @GetMapping("/all-tasks")
+    public ResponseEntity<List<Task>> getAllTasks() {
+        return new ResponseEntity<List<Task>>(taskService.getAllTasks(), HttpStatus.OK);
+    }
+
+    @GetMapping("/all-users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<List<User>>(userService.getUsers(), HttpStatus.OK);
     }
 
 
