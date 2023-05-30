@@ -9,9 +9,11 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tmt.TaskManagementTool.models.Comment;
 import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Task;
 import com.tmt.TaskManagementTool.models.User;
+import com.tmt.TaskManagementTool.repositories.CommentRepository;
 import com.tmt.TaskManagementTool.repositories.TaskRepository;
 import com.tmt.TaskManagementTool.util.GenericUtil;
 
@@ -32,6 +34,9 @@ public class TaskService {
 
     @Autowired
     private GenericUtil genericUtil;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     /**
      * Get all the tasks that is created by user
@@ -98,7 +103,6 @@ public class TaskService {
 
     public Task createTask(Task task){
         task.setCreatedAt(genericUtil.getCurrentDateTime());
-        // TODO task.setAssignedBy() and task.setcreatedby()
         if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
             Notification notification = notificationService.createNotificationForTask(task.getTid());
             notification.setBody("Task " + task.getTid() + ": has been assigned to you by " + task.getCreatedBy());
@@ -148,5 +152,28 @@ public class TaskService {
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
+    public List<Comment> getAllCommentsByTaskId(String taskId){
+        return null;
+    }
     
+    public void createCommentForTask(String taskid, Comment comment){
+        Optional<Task> taskOptional = taskRepository.findTaskByTid(taskid);
+        Task task = taskOptional.orElseThrow(()-> new IllegalArgumentException("Task not found: " + taskid));
+
+        comment.setCreatedAt(genericUtil.getCurrentDateTime());
+        comment.setTaskId(taskid);
+        //TODO add createdby to comment
+        commentRepository.insert(comment);
+
+        List<Comment> comments = task.getComments();
+        comments.add(comment);
+
+        Notification notification = notificationService.createNotificationForTask(taskid);
+        notification.setBody("A new comment was added by " + comment.getCreatedBy() + ".");
+        notification.setUserId(task.getAssignedTo());
+        notificationService.saveNotification(notification);
+
+        taskRepository.save(task);
+
+    }
 }

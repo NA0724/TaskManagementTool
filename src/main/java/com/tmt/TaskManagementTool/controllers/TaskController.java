@@ -18,8 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmt.TaskManagementTool.models.Comment;
 import com.tmt.TaskManagementTool.models.Task;
 import com.tmt.TaskManagementTool.services.TaskService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -33,11 +36,13 @@ public class TaskController {
      * create a new user in the database
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestBody String requestBody){
+    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session){
         ObjectMapper objectMapper = new ObjectMapper();
 		try {
+            String username = session.getAttribute("user").toString();
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			Task newTask = new Task();
+            newTask.setCreatedBy(username);
             return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
         }catch (Exception e) {
             System.out.println("@>@ Exception occurred in creating new user : " + e); 
@@ -76,6 +81,23 @@ public class TaskController {
         attachments.add(file);
         taskService.updateTask(task);
         return ResponseEntity.ok("Attachments uploaded successfully.");
+    }
+
+    @PostMapping("/{taskid}/add-comment")
+    public ResponseEntity<Comment> addComment(@PathVariable("taskId") String taskId, HttpSession session, @RequestBody String requestBody){
+        String username = session.getAttribute("user").toString();
+        Task task = taskService.getTaskByTid(taskId);
+        Comment comment = new Comment();
+        List<Comment> comments = task.getComments();
+        comment.setCreatedBy(username);
+        comments.add(comment);
+        taskService.createCommentForTask(taskId, comment);
+        return new ResponseEntity<Comment>(comment, HttpStatus.OK);
+    }
+
+    @PostMapping("/{taskid}/all-comments")
+    public ResponseEntity<List<Comment>> addComment(@PathVariable("taskId") String taskId, @RequestBody String requestBody){
+        return new ResponseEntity<List<Comment>>(taskService.getAllCommentsByTaskId(taskId), HttpStatus.OK);
     }
 }
 

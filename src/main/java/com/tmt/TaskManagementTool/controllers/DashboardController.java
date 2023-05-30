@@ -78,7 +78,8 @@ public class DashboardController {
     }
 
     @GetMapping("/my-profile")
-    public ResponseEntity<User> getMyProfile(String username){
+    public ResponseEntity<User> getMyProfile(HttpSession session){
+        String username = session.getAttribute("user").toString();
         User user = userService.getUserByUsername(username);
         return new ResponseEntity<User>(user, HttpStatus.OK);
         
@@ -93,7 +94,8 @@ public class DashboardController {
      * get all notifications from the database for user
      */
     @GetMapping("/notifications")
-    public ResponseEntity<List<Notification>> getAllNotificationForUser(String username){
+    public ResponseEntity<List<Notification>> getAllNotificationForUser(HttpSession session){
+        String username = session.getAttribute("user").toString();
         return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username), HttpStatus.OK);
     }
 
