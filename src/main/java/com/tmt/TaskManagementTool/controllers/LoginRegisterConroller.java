@@ -44,17 +44,15 @@ public class LoginRegisterConroller {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			String username = jsonNode.get("username").asText();
 			String password = jsonNode.get("password").asText();
-			System.out.println("@>@ em" + username);
-			System.out.println("@>@ pwd" + password);
 			User usr= userService.getUserByUsername(username);
 			if (usr != null && usr.getPassword().equals(password)) {
 				
 				String val = authService.getBasicAuthenticationHeader(username, password);
 				log.info(val);
-				log.info(authService.decode(val));
 				headers.add("Authorization", val);
 				responseEntity = ResponseEntity.ok().headers(headers).body(true);
 				System.out.println(responseEntity);
+				log.info(authService.decode(val));
 				
 			} else {
 				responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);

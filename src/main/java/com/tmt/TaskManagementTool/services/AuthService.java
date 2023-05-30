@@ -1,7 +1,12 @@
 package com.tmt.TaskManagementTool.services;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +21,23 @@ public class AuthService {
     
     public String getBasicAuthenticationHeader(String username, String password) {
         String valueToEncode = username + ":" + password;
-        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
+        long expirationTimeInSeconds = 3600; // 1 hour in seconds
+
+        // Set the current time and calculate the token's expiration date
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expirationDateTime = currentTime.plusSeconds(expirationTimeInSeconds);
+        long expirationTimestamp = expirationDateTime.toEpochSecond(ZoneOffset.UTC);
+        String token = Base64.getEncoder().encodeToString(valueToEncode.getBytes(StandardCharsets.UTF_8));
+        String random = UUID.randomUUID().toString();
+        String authHeader = "Basic " + random + ";" + expirationTimestamp + ";" + token;    
+        return authHeader;
     }
 
     public String decode(String val){
-        String[] authParts = val.split("\\s+");
-        byte[] credDecoded = Base64.getDecoder().decode(authParts[1]);
+        String auth = val.replace("Basic ", "");
+        String[] parts = auth.split(";");
+        String expirationtime = parts[1];
+        byte[] credDecoded = Base64.getDecoder().decode(parts[2]);
         String credentials = new String(credDecoded, StandardCharsets.UTF_8);
         // credentials = username:password
         //final String[] values = credentials.split(":", 2);
@@ -32,4 +48,5 @@ public class AuthService {
         String username = decode(val);
         return userService.getUserByUsername(username);
     }
+
 }
