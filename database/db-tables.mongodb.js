@@ -75,56 +75,36 @@ db.User.createIndex( { "username": 1, "email": 1 } , { unique: true , required :
 db.createCollection('permissions');
 
 // Insert a few documents into the sales collection.
-db.getCollection('Role').insertMany([
-  { 
-    'rid': 'R1', 
-    'name': 'Administrator', 
-    'permissions': [
-      {
-        'pid': 'P1',
-        'name': 'Create User'
-      },
-      { 
-        'pid': 'P2', 
-        'name': 'Update User' 
-      },
-      { 
-        'pid': 'P3', 
-        'name': 'Delete User' 
-      }],
-    },
-  ]);
-db.Role.createIndex( { "rid": 1, "name": 1} , {unique: true, required : true} )
+db.Role.insertOne({
+  "_id": ObjectId("role_id_1"),
+  "rid": "R1",
+"name": "Administrator",
+  "permissions": ["assignTasks", "updateTaskStatus", "addComments"]
+});
 
+db.Role.insertOne({
+  "_id": ObjectId("role_id_2"),
+  "rid": "R2",
+  "name": "Manager",
+  "permissions": ["assignTasks", "updateTaskStatus"]
+});
 
+db.Role.insertOne({
+  "_id": ObjectId("role_id_3"),
+  "rid": "R3",
+  "name": "Team Member",
+  "permissions": ["updateTaskStatus", "addComments"]
+});
 
-// Insert a few documents into the sales collection.
-/*db.getCollection('Permission').insertMany([
-  { 
-    'pid': 'P1', 
-    'name': 'Create User'
-  },
-  { 
-    'pid': 'P2', 
-    'name': 'Update User' 
-  },
-  { 
-    'pid': 'P3', 
-    'name': 'Delete User' 
-  },
-]);
-db.Permission.createIndex( { "pid": 1, "name": 1 } , { unique: true, required : true} )*/
 
 db.getCollection('Comment').insertMany([
   { 
-    'commentId': 'C1', 
     'taskId': 'T1', 
     'body': 'test comment', 
     'createdAt': '', 
     'createdBy': 'nraj' 
   },
 ]);
-db.Comment.createIndex( { "commentId": 1, "taskId": 1 } , { unique: true , required : true} )
 
 db.getCollection('Notification').insertMany([
   {  
@@ -133,7 +113,6 @@ db.getCollection('Notification').insertMany([
     'userId': 'nraj'
   },
 ]);
-db.Notification.createIndex( { "notificationId": 1, "userId": 1, "taskId": 1} , { unique: true , required : true} )
 
 
 db.getCollection('Task').insertMany([
@@ -173,6 +152,22 @@ db.getCollection('Task').insertMany([
 
 db.Task.createIndex( {"tid": 1} , { unique: true, required : true} )
 
+
+db.getCollection('UserTask').insertMany([
+  { 
+    'taskId': 'T1', 
+    'assignedTo': 'nraj', 
+    'createdBy': 'nraj' 
+  },
+]);
+
+db.getCollection('Attachment').insertMany([
+  { 
+    'id': 'A1', 
+    'taskId': 'T1', 
+    'filename': 'pic.jpeg', 
+  },
+]);
 
 
 // Run a find command to view items sold on April 4th, 2014.

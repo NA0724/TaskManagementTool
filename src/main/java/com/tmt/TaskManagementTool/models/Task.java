@@ -8,7 +8,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,15 +30,11 @@ public class Task {
     private String createdBy;
     private String createdAt;
     private String assignedTo;
-    private String assignedBy;
     private String assignedDate;
-    private String assignedTime;
-    private String dueTime;
     private String taskType;
     private String taskCategory;
     @DocumentReference
     private List<Comment> comments = new ArrayList<Comment>();
-
-    List<MultipartFile> attachments;
-    
+    @DocumentReference
+    private List<Attachment> attachments = new ArrayList<Attachment>();
 }

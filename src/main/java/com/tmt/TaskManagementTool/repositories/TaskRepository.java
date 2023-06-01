@@ -1,5 +1,6 @@
 package com.tmt.TaskManagementTool.repositories;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,7 @@ public interface TaskRepository extends MongoRepository<Task, ObjectId>{
     List<Task> findTasksByStatus(String status);
     List<Task> findTasksByAssignedTo(String username);
     Optional<Task> findTaskByTid(String tid);
+    List<Task> findTaskByDueDate(LocalDate dueDate);
+    List<Task> findTasksByStatusAndDueDate(String status, LocalDate dueDate);
+
 }

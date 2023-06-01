@@ -69,28 +69,5 @@ public class UserService {
         }
         return null;
     }
-
-    // public String getUserCreds(String username) {
-    // // User user = new User();
-    // Optional<User> user = userRepository.getUserByUsername(username);
-    // String passWord = user.get().getPassword();
-    // return passWord;
-    // }
-
-    
-    /*protected User getCurrentUser() {
-        if (user == null) {
-            user = userService.findUserByEmail(SecurityContextHolder.getContext().getAuthentication().getPrincipal().getName());
-        }
-        return user;
-    }*/
-
-    /**
-     * public Role getRoleByUsername(String username){
-        Optional<User> user = userRepository.getUserByUsername(username);
-        return null;
-        
-    }
-     */
     
 }

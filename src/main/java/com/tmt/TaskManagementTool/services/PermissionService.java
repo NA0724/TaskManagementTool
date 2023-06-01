@@ -45,12 +45,12 @@ public class PermissionService {
             log.info("Permission already exists");
             return null;
         }
-        Optional<Role> roleOptional = roleRepository.getRoleByRid(roleId);
+        /* Optional<Role> roleOptional = roleRepository.getRoleByRid(roleId);
         Role role = roleOptional.orElseThrow(()-> new IllegalArgumentException("role not found"));
         List<Permission> permissions = role.getPermissions();
         permissionRepository.insert(permission);
         permissions.add(permission);
-        roleRepository.save(role);
+        roleRepository.save(role); */
         
         return permissionRepository.insert(permission);
     }
