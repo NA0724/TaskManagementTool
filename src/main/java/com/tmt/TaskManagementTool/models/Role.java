@@ -20,6 +20,6 @@ public class Role {
     private ObjectId id;
     private String rid;
     private String name;
-    private List<Permission> permissions;
+    private List<String> permissions;
     
 }

@@ -1,4 +1,4 @@
-package com.tmt.TaskManagementTool.services;
+package com.tmt.TaskManagementTool.util;
 
 import java.util.List;
 
@@ -8,10 +8,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.tmt.TaskManagementTool.models.Task;
+import com.tmt.TaskManagementTool.services.NotificationService;
+import com.tmt.TaskManagementTool.services.TaskService;
 
 @Configuration
 @EnableScheduling
-public class TaskReminder {
+public class TaskReminderConfig {
 
     @Autowired
     private TaskService taskService;

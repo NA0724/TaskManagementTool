@@ -3,10 +3,7 @@ package com.tmt.TaskManagementTool.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +21,6 @@ import com.tmt.TaskManagementTool.services.TaskService;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.tmt.TaskManagementTool.util.GeneratePdfReportUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,12 +45,16 @@ public class DashboardController {
     @Autowired
 	private AuthService authService;
     
-    
+    /**
+     * Get dashboard Page
+     * @param session
+     * @return
+     */
     @RequestMapping(value="/dashboard", method = RequestMethod.GET, produces = "application/text")
     public ResponseEntity<DasboardData> getDashboardPage(HttpSession session){
         String username = session.getAttribute("user").toString();
         User user = userService.getUserByUsername(username);
-        log.info(user.getFirstname()+" " +user.getLastname() + " has logged in successfully");
+        log.info(user.getFirstname()+ " " +user.getLastname() + " has logged in successfully");
         
         ObjectMapper objectMapper = new ObjectMapper();
         DasboardData dashboardData = new DasboardData();
@@ -67,7 +66,7 @@ public class DashboardController {
         }
         List<Notification> notifications = notificationService.getAllNotificationsByUserId(username);
         int newTasksCount = taskService.countTaskByStatus("New");
-        int inProgressTasksCount = taskService.countTaskByStatus("In Progress");
+        int inProgressTasksCount = taskService.countTaskByStatus("InProgress");
         int completedTasksCount = taskService.countTaskByStatus("Completed");
         dashboardData.setNewTaskCount(newTasksCount);
         dashboardData.setCompletedTasksCount(completedTasksCount);
@@ -77,21 +76,35 @@ public class DashboardController {
         return new ResponseEntity<DasboardData>(dashboardData, HttpStatus.OK);
     }
 
+    /**
+     * Get My Profile Page
+     * @param session
+     * @return
+     */
     @GetMapping("/my-profile")
     public ResponseEntity<User> getMyProfile(HttpSession session){
         String username = session.getAttribute("user").toString();
         User user = userService.getUserByUsername(username);
         return new ResponseEntity<User>(user, HttpStatus.OK);
+    }
+
+    /**
+     * Generate PDF Report
+     */
+    @GetMapping("/pdfreport")
+    public void getPDFReport(HttpSession session){
+        String username = session.getAttribute("user").toString();
+        User user = userService.getUserByUsername(username);
+        if (user.getRole().getName().equalsIgnoreCase("Manager")){
+            generatePdfReportUtil.generatePdfReport();
+        }
         
     }
 
-    @GetMapping("/pdfreport")
-    public void getPDFReport(){
-        generatePdfReportUtil.generatePdfReport();
-    }
-
-     /*
-     * get all notifications from the database for user
+    /**
+     * Get all notifications for a user
+     * @param session
+     * @return
      */
     @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getAllNotificationForUser(HttpSession session){
@@ -99,16 +112,6 @@ public class DashboardController {
         return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username), HttpStatus.OK);
     }
 
-    @GetMapping("/all-tasks")
-    public ResponseEntity<List<Task>> getAllTasks() {
-        return new ResponseEntity<List<Task>>(taskService.getAllTasks(), HttpStatus.OK);
-    }
-
-    @GetMapping("/all-users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<List<User>>(userService.getUsers(), HttpStatus.OK);
-    }
-
-
+    
     
 }

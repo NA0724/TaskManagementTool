@@ -35,7 +35,13 @@ public class LoginRegisterConroller {
 	@Autowired
 	private AuthService authService;
 
-
+	/**
+	 * Login API
+	 * @param requestBody
+	 * @param session
+	 * @return
+	 * @throws LoginException
+	 */
 	@PostMapping("/loginUser")
 	public ResponseEntity<LoginResponse> getUserByUsername(@RequestBody String requestBody, HttpSession session) throws LoginException{
 		// User user = new User();
@@ -63,6 +69,11 @@ public class LoginRegisterConroller {
 		return responseEntity;
 	}
 
+	/**
+	 * Register API
+	 * @param requestBody
+	 * @return
+	 */
 	@PostMapping("/registerUser")
 	public ResponseEntity<User> createUser(@RequestBody String requestBody) {
 		System.out.println("@>@" + requestBody);

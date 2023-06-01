@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.tmt.TaskManagementTool.models.User;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class AuthService {
 
     @Autowired
@@ -53,6 +55,20 @@ public class AuthService {
         //final String[] values = credentials.split(":", 2);
         String userName=credentials.split(":")[0];
         return userName;
+    }
+
+    public User getCurrentUser(HttpSession session) {
+        try{
+            if (session!=null) {
+                if (session.getAttribute("user")!=null){
+                    String userName = session.getAttribute("user").toString();
+                    return userService.getUserByUsername(userName);
+                }
+            }
+        }catch(Exception e){
+            log.error("Error getting current user", e);
+        }
+        return null;
     }
 
 }

@@ -9,12 +9,16 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tmt.TaskManagementTool.models.Attachment;
 import com.tmt.TaskManagementTool.models.Comment;
 import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Task;
 import com.tmt.TaskManagementTool.models.User;
+import com.tmt.TaskManagementTool.models.UserTask;
+import com.tmt.TaskManagementTool.repositories.AttachmentRepository;
 import com.tmt.TaskManagementTool.repositories.CommentRepository;
 import com.tmt.TaskManagementTool.repositories.TaskRepository;
+import com.tmt.TaskManagementTool.repositories.UserTaskRepository;
 import com.tmt.TaskManagementTool.util.GenericUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +41,12 @@ public class TaskService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+
+    @Autowired
+    private UserTaskRepository userTaskRepository;
 
     /**
      * Get all the tasks that is created by user
@@ -75,13 +85,6 @@ public class TaskService {
      * @return
      */
     public List<Task> findTaskListByStatusAssignedToUser(String username, String status){
-        /*List<Task> allTasksAssignedToUser = getAllTasksAssignedToUser(username);
-        List<Task> taskByStatus = new ArrayList<Task>();
-        for (Task task : allTasksAssignedToUser){
-            if (task.getStatus().equalsIgnoreCase(status)){
-                taskByStatus.add(task);
-            }
-        }*/
 
         User user = userService.getUserByUsername(username);
 
@@ -101,6 +104,11 @@ public class TaskService {
         return allTaskByStatus.size();
     }
 
+    /**
+     * Create a new task
+     * @param task
+     * @return
+     */
     public Task createTask(Task task){
         task.setCreatedAt(genericUtil.getCurrentDateTime());
         if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
@@ -110,6 +118,7 @@ public class TaskService {
             notification.setUserId(task.getAssignedTo());
             notificationService.saveNotification(notification);
         }
+        updateTask(task);
         return taskRepository.insert(task);
     }
 
@@ -129,18 +138,19 @@ public class TaskService {
         Task oldTask = getTaskByTid(task.getTid());
         Notification notification = notificationService.createNotificationForTask(task.getTid());
         
-        if(!(oldTask.getStatus().equalsIgnoreCase(task.getStatus()))){
+        if(!(oldTask.getStatus()==oldTask.getStatus())){
             notification.setBody("Task " + task.getTid() + ": Status changed to " +task.getStatus());
             
         }else if (!(oldTask.getAssignedTo().equalsIgnoreCase(task.getAssignedTo()))){
             notification.setBody("Task " + task.getTid() + ": has been assigned to you.");
+            updateTask(oldTask);
         }else{
             notification.setBody("There is an update to Task " + task.getTid() +". Please check.");
         }
 
         notification.setUserId(task.getAssignedTo());
         notificationService.saveNotification(notification);
-
+        
         return taskRepository.save(task);
     }
 
@@ -152,28 +162,54 @@ public class TaskService {
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
-    public List<Comment> getAllCommentsByTaskId(String taskId){
-        return null;
+
+    public List<Comment> getCommentsForTask(String taskid){
+        return commentRepository.findCommentsByTaskId(taskid);
     }
     
-    public void createCommentForTask(String taskid, Comment comment){
-        Optional<Task> taskOptional = taskRepository.findTaskByTid(taskid);
-        Task task = taskOptional.orElseThrow(()-> new IllegalArgumentException("Task not found: " + taskid));
-
+    public void createCommentForTask(Task task, Comment comment){
         comment.setCreatedAt(genericUtil.getCurrentDateTime());
-        comment.setTaskId(taskid);
-        //TODO add createdby to comment
         commentRepository.insert(comment);
-
-        List<Comment> comments = task.getComments();
-        comments.add(comment);
-
-        Notification notification = notificationService.createNotificationForTask(taskid);
+        taskRepository.save(task);
+        Notification notification = notificationService.createNotificationForTask(task.getTid());
         notification.setBody("A new comment was added by " + comment.getCreatedBy() + ".");
         notification.setUserId(task.getAssignedTo());
         notificationService.saveNotification(notification);
-
-        taskRepository.save(task);
-
     }
+
+    public List<Task> findTaskByStatus(String status){
+        List<Task> allTaskByStatus = taskRepository.findTasksByStatus(status);
+        return allTaskByStatus;
+    }
+
+    public List<Task> findTaskByDueDate(LocalDate duedate){
+        List<Task> allTaskDue = taskRepository.findTaskByDueDate(duedate);
+        return allTaskDue ;
+    }
+
+    public List<Task> filterTaskByStatusAndDueDate(String status, LocalDate dueDate){
+        return taskRepository.findTasksByStatusAndDueDate(status, dueDate);
+    }
+
+    public Attachment saveAttachment(String taskid, Attachment attachment){
+        Task task = getTaskByTid(taskid);
+        task.getAttachments().add(attachment);
+        taskRepository.save(task);
+        return attachmentRepository.insert(attachment);
+    }
+
+    public List<Attachment> geAttachmentsForTask(String taskid){
+        return attachmentRepository.findAttachmentsByTaskid(taskid);
+    }
+
+    public void updateUserTask(Task task){
+        UserTask userTask = new UserTask();
+        userTask.setTaskid(task.getTid());
+        userTask.setCreatedBy(task.getCreatedBy());
+        if (task.getAssignedTo()!=null) {
+            userTask.setAssignedTo(task.getAssignedTo());
+        }
+        userTaskRepository.save(userTask);
+    }
+
 }
