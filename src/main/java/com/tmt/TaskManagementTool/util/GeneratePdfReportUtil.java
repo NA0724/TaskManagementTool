@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.tmt.TaskManagementTool.models.Task;
+import com.tmt.TaskManagementTool.repositories.TaskRepository;
+import com.tmt.TaskManagementTool.services.TaskService;
 
 @Component("pdfGenerator")
 public class GeneratePdfReportUtil {
@@ -35,20 +39,14 @@ public class GeneratePdfReportUtil {
 	@Value("${localDateFormat}")
 	private String localDateFormat;
 	
-	@Value("${logoImgPath}")
-	private String logoImgPath;
-	
-	@Value("${logoImgScale}")
-	private Float[] logoImgScale;
-	
-	@Value("${currencySymbol:}")
-	private String currencySymbol;
-	
 	@Value("${table_noOfColumns}")
 	private int noOfColumns;
 	
 	@Value("${table.columnNames}")
 	private List<String> columnNames;
+
+	@Autowired
+	private TaskService taskService;
 	
 	
 
@@ -63,7 +61,6 @@ public class GeneratePdfReportUtil {
 		try {
 			PdfWriter.getInstance(document, new FileOutputStream(getPdfNameWithDate()));
 			document.open();
-			//addLogo(document);
 			addDocTitle(document);
 			createTable(document,noOfColumns);
 			addFooter(document);
@@ -117,28 +114,31 @@ public class GeneratePdfReportUtil {
 		}
 
 		table.setHeaderRows(1);
-		//getDbData(table);
+		getDbData(table);
 		document.add(table);
 	}
 	
-	/*private void getDbData(PdfPTable table) {
+	private void getDbData(PdfPTable table) {
 		
-		List<Employee> list = eRepo.getAllEmployeeData();
-		for (Employee employee : list) {
+		List<Task> list = taskService.getAllTasks();
+		for (Task task : list) {
 			
 			table.setWidthPercentage(100);
 			table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
 			table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
 			
-			table.addCell(employee.getEmpId().toString());
-			table.addCell(employee.getEmpName());
-			table.addCell(employee.getEmpDept());
-			table.addCell(currencySymbol + employee.getEmpSal().toString());
+			table.addCell(task.getTid());
+			table.addCell(task.getTitle());
+			table.addCell(task.getCreatedAt());
+			table.addCell(task.getCreatedBy());
+			table.addCell(task.getAssignedTo());
+			table.addCell(task.getDueDate().toString());
+			table.addCell(task.getStatus());
+			table.addCell(task.getPriority());
 			
-			System.out.println(employee.getEmpName());
 		}
 		
-	}*/
+	}
 	
 	private void addFooter(Document document) throws DocumentException {
 		Paragraph p2 = new Paragraph();

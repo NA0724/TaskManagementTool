@@ -46,7 +46,7 @@ public class LoginRegisterConroller {
 	public ResponseEntity<LoginResponse> getUserByUsername(@RequestBody String requestBody, HttpSession session) throws LoginException{
 		// User user = new User();
 		HttpHeaders headers = new HttpHeaders();
-		System.out.println("@>@" + requestBody);
+		log.info("User: " + requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
 		ResponseEntity<LoginResponse> responseEntity = null;
 		try {
@@ -63,7 +63,7 @@ public class LoginRegisterConroller {
 				responseEntity = ResponseEntity.ok().headers(headers).body(loginResponse);
 			} 
 		} catch (Exception e) {
-			System.out.println("@>@ E : " + e);
+			log.error("Unable to login, error: " , e);
 			return new ResponseEntity<>(new LoginResponse(false, null), HttpStatus.UNAUTHORIZED);
 		}
 		return responseEntity;
@@ -76,9 +76,7 @@ public class LoginRegisterConroller {
 	 */
 	@PostMapping("/registerUser")
 	public ResponseEntity<User> createUser(@RequestBody String requestBody) {
-		System.out.println("@>@" + requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
-		ResponseEntity<User> responseEntity = null;
 		try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			String email = jsonNode.get("email").asText();
@@ -96,14 +94,12 @@ public class LoginRegisterConroller {
 			//Role role = new Role();
 			//newUser.setRole(role);
 
-			responseEntity = new ResponseEntity<User>(userService.createUser(newUser),
+			return new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);
 		} catch (Exception e) {
-			System.out.println("@>@ E : " + e);
-
+			log.error("Error in registering new user", e);
+			return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		// return new ResponseEntity<String>("Done", HttpStatus.CREATED);
-		return responseEntity;
 	}
 
 }

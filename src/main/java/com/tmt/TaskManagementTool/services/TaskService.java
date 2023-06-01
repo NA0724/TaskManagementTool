@@ -13,7 +13,6 @@ import com.tmt.TaskManagementTool.models.Attachment;
 import com.tmt.TaskManagementTool.models.Comment;
 import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Task;
-import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.models.UserTask;
 import com.tmt.TaskManagementTool.repositories.AttachmentRepository;
 import com.tmt.TaskManagementTool.repositories.CommentRepository;
@@ -29,9 +28,6 @@ public class TaskService {
     
     @Autowired
     private TaskRepository taskRepository;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private NotificationService notificationService;
@@ -54,12 +50,8 @@ public class TaskService {
      * @return
      */
     public List<Task> getAllTasksCreatedByUser(String username){
-        // TODO fetch user from current session
-        //check code in userservice
-        User user = userService.getUserByUsername(username);
-        
-       List<Task> allTasks = taskRepository.findTasksByCreatedBy(user.getUsername());
-        log.info("found tasks for user " + user.getUsername());
+       List<Task> allTasks = taskRepository.findTasksByCreatedBy(username);
+        log.info("found tasks for user " + username);
         return allTasks;
     }
 
@@ -69,12 +61,8 @@ public class TaskService {
      * @return
      */
     public List<Task> getAllTasksAssignedToUser(String username){
-        // TODO fetch user from current session
-        //check code in userservice
-        User user = userService.getUserByUsername(username);
-        
-       List<Task> allTasks = taskRepository.findTasksByAssignedTo(user.getUsername());
-        log.info("found tasks for user " + user.getUsername());
+       List<Task> allTasks = taskRepository.findTasksByAssignedTo(username);
+        log.info("found tasks for user " + username);
         return allTasks;
     }
 
@@ -85,11 +73,8 @@ public class TaskService {
      * @return
      */
     public List<Task> findTaskListByStatusAssignedToUser(String username, String status){
-
-        User user = userService.getUserByUsername(username);
-
         List<Task> alltasksByStatus = taskRepository.findTasksByStatus(status);
-        alltasksByStatus.stream().filter(t -> t.getCreatedBy().equalsIgnoreCase(user.getUsername()))
+        alltasksByStatus.stream().filter(t -> t.getCreatedBy().equalsIgnoreCase(username))
                     .collect(Collectors.toList());
         return alltasksByStatus;
     }

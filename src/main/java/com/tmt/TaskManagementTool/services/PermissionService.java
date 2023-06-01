@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tmt.TaskManagementTool.models.Permission;
-import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.repositories.PermissionRepository;
 import com.tmt.TaskManagementTool.repositories.RoleRepository;
 

@@ -23,7 +23,6 @@ public class GenericUtil {
         Role role = new Role();
         role.setRid(roleid);
         role.setName(roleName);
-        // TODO create list of permissions and assign it to role and then to user
         user.setRole(role);
         return user;	
     }
@@ -34,9 +33,6 @@ public class GenericUtil {
 		  String firstName = jsonNode.get("firstname").asText();
 		  String lastName = jsonNode.get("lastname").asText();
 		  String userName = jsonNode.get("username").asText();
-      String roleid = jsonNode.get("roleid").asText();
-      String roleName = jsonNode.get("rolename").asText();
-      //TODO update permissions
       user.setEmail(email);
       user.setFirstname(firstName);
       user.setLastname(lastName);

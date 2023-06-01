@@ -4,8 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +46,6 @@ public class AuthService {
         }
         String auth = val.replace("Basic ", "");
         String[] parts = auth.split(";");
-        String expirationtime = parts[1];
         byte[] credDecoded = Base64.getDecoder().decode(parts[2]);
         String credentials = new String(credDecoded, StandardCharsets.UTF_8);
         // credentials = username:password

@@ -50,7 +50,7 @@ public class DashboardController {
      * @param session
      * @return
      */
-    @RequestMapping(value="/dashboard", method = RequestMethod.GET, produces = "application/text")
+    @RequestMapping(value="/dashboard", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DasboardData> getDashboardPage(HttpSession session){
         String username = session.getAttribute("user").toString();
         User user = userService.getUserByUsername(username);

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.tmt.TaskManagementTool.models.Task;
@@ -18,5 +19,7 @@ public interface TaskRepository extends MongoRepository<Task, ObjectId>{
     Optional<Task> findTaskByTid(String tid);
     List<Task> findTaskByDueDate(LocalDate dueDate);
     List<Task> findTasksByStatusAndDueDate(String status, LocalDate dueDate);
+    @Query("{ 'dueDate' : { $lt: ?0 } }")
+    List<Task> findTasksByDueDateBefore(LocalDate date);
 
 }
