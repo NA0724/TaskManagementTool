@@ -1,6 +1,6 @@
 package com.tmt.TaskManagementTool.controllers;
 
-
+import javax.security.auth.login.LoginException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tmt.TaskManagementTool.dtos.LoginResponse;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.AuthService;
 import com.tmt.TaskManagementTool.services.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,39 +36,46 @@ public class LoginRegisterConroller {
 	@Autowired
 	private AuthService authService;
 
-
+	/**
+	 * Login API
+	 * @param requestBody
+	 * @param session
+	 * @return
+	 * @throws LoginException
+	 */
 	@PostMapping("/loginUser")
-	public ResponseEntity<Boolean> getUserByUsername(@RequestBody String requestBody) {
+	public ResponseEntity<LoginResponse> getUserByUsername(@RequestBody String requestBody, HttpSession session) throws LoginException{
 		// User user = new User();
+		HttpHeaders headers = new HttpHeaders();
 		System.out.println("@>@" + requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
-		ResponseEntity<Boolean> responseEntity = null;
-		HttpHeaders headers = new HttpHeaders();
+		ResponseEntity<LoginResponse> responseEntity = null;
 		try {
-
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
 			String username = jsonNode.get("username").asText();
 			String password = jsonNode.get("password").asText();
-			System.out.println("@>@ em" + username);
-			System.out.println("@>@ pwd" + password);
-			User usr= userService.getUserByUsername(username);
-			if (usr != null && usr.getPassword().equals(password)) {
-				String val = authService.getBasicAuthenticationHeader(username, password);
-				log.info(val);
-				log.info(authService.decode(val));
-				headers.add("Authorization", val);
-				responseEntity = ResponseEntity.ok().headers(headers).body(true);
-				System.out.println(responseEntity);
-			} else {
-				responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
-			}
+
+			String auth = authService.getBasicAuthenticationHeader(username, password);
+			if (auth.isEmpty()) {
+				return new ResponseEntity<>(new LoginResponse(false, null), HttpStatus.UNAUTHORIZED);
+			}else{
+				session.setAttribute("user", username);
+				headers.add("Authorization", auth);
+				LoginResponse loginResponse = new LoginResponse(true, session.getAttribute("user"));
+				responseEntity = ResponseEntity.ok().headers(headers).body(loginResponse);
+			} 
 		} catch (Exception e) {
 			System.out.println("@>@ E : " + e);
-			responseEntity = new ResponseEntity<Boolean>(false, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(new LoginResponse(false, null), HttpStatus.UNAUTHORIZED);
 		}
 		return responseEntity;
 	}
 
+	/**
+	 * Register API
+	 * @param requestBody
+	 * @return
+	 */
 	@PostMapping("/registerUser")
 	public ResponseEntity<User> createUser(@RequestBody String requestBody) {
 		System.out.println("@>@" + requestBody);

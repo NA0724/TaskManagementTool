@@ -19,7 +19,8 @@ import lombok.Setter;
 @Setter
 public class DasboardData {
     
-    private List<Task> tasks;
+    private List<Task> tasksAssignedTo;
+    private List<Task> tasksCreatedBy;
     private User user;
     private int newTaskCount;
     private int inProgressTasksCount;
