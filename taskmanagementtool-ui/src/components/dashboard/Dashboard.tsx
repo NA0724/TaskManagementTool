@@ -45,6 +45,9 @@ import TaskCard from "../taskcard/TaskCard";
 import AddTask from "../addtask/AddTask";
 import NotificationPane from "../notification/NotificationPane";
 
+// Import the background image
+import backgroundImage from "../images/background.jpg";
+
 interface Task {
   id: string;
   tid: string;
@@ -188,7 +191,8 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
+      
       <AppBar position="static" className="app-bar">
         <Toolbar>
           <IconButton
@@ -311,7 +315,7 @@ const Dashboard: React.FC = () => {
         </Grid>
 
         {/* Vertical Menu - Takes 30% of the width */}
-        <Grid item xs={2}>
+        <Grid item xs={2} className="sidebar">
           <List component="nav" aria-label="menu">
             <ListItem button>
               <ListItemText primary={`New ${completedTasksCount}`} />

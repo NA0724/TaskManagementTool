@@ -41,6 +41,9 @@ import AddTask from "../addtask/AddTask";
 import NotificationPane from "../notification/NotificationPane";
 import "./Profile.css";
 
+// Import the background image
+import backgroundImage from "../images/background.jpg";
+
 interface Role {
   id: number;
   name: string;
@@ -136,7 +139,8 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
+      
       <AppBar position="static" className="app-bar">
         <Toolbar>
           <IconButton
@@ -225,59 +229,64 @@ const Profile: React.FC = () => {
       </Grid>
 
       <Box
-        display="flex"
-        flexDirection="column"
-        height="100%"
-        className="form-container"
-      >
-        <Typography variant="h6" component="div" gutterBottom>
-          Profile
-        </Typography>
+  display="flex"
+  flexDirection="column"
+  height="100%"
+  className="form-container"
+>
+  <Typography variant="h6" component="div" gutterBottom>
+    Profile
+  </Typography>
 
-        <Box flexGrow={1} display="flex" flexDirection="column">
-          <form onSubmit={handleSubmit}>
-            <div className="form-input">
-              <InputLabel id="username-label">Username</InputLabel>
-              <TextField
-                value={profileData?.username || ""}
-                fullWidth
-                InputProps={
-                  { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-                }
-              />
-            </div>
+  <Box flexGrow={1} display="flex" flexDirection="column">
+    <form onSubmit={handleSubmit}>
+      <div className="row">
+        <div className="form-input col-md-6">
+          <InputLabel id="username-label">Username</InputLabel>
+          <TextField
+            value={profileData?.username || ""}
+            fullWidth
+            InputProps={
+              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
+            }
+          />
+        </div>
 
-            <div className="form-input">
-              <InputLabel id="email-label">Email</InputLabel>
-              <TextField value={profileData?.email || ""} fullWidth />
-            </div>
+        <div className="form-input col-md-6">
+          <InputLabel id="email-label">Email</InputLabel>
+          <TextField value={profileData?.email || ""} fullWidth />
+        </div>
+      </div>
 
-            <div className="form-input">
-              <InputLabel id="firstname-label">First Name</InputLabel>
-              <TextField
-                value={profileData?.firstname || ""}
-                fullWidth
-                InputProps={
-                  { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-                }
-              />
-            </div>
+      <div className="row">
+        <div className="form-input col-md-6">
+          <InputLabel id="firstname-label">First Name</InputLabel>
+          <TextField
+            value={profileData?.firstname || ""}
+            fullWidth
+            InputProps={
+              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
+            }
+          />
+        </div>
 
-            <div className="form-input">
-              <InputLabel id="lastname-label">Last Name</InputLabel>
-              <TextField
-                value={profileData?.lastname || ""}
-                fullWidth
-                InputProps={
-                  { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-                }
-              />
-            </div>
+        <div className="form-input col-md-6">
+          <InputLabel id="lastname-label">Last Name</InputLabel>
+          <TextField
+            value={profileData?.lastname || ""}
+            fullWidth
+            InputProps={
+              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
+            }
+          />
+        </div>
+      </div>
 
-            <Button type="submit">Back</Button>
-          </form>
-        </Box>
-      </Box>
+      <Button type="submit">Back</Button>
+    </form>
+  </Box>
+</Box>
+
     </div>
   );
 };

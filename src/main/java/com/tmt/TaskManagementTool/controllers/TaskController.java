@@ -87,7 +87,7 @@ public class TaskController {
                 for (JsonNode commentNode : commentsNode) {
                     Comment comment = new Comment();
                     comment.setBody(commentNode.get("body").asText());
-                    comment.setCreatedBy(loggedInUser.getUsername());
+                    comment.setCreatedBy(jsonNode.get("createdBy").asText());
                     comments.add(comment);
                 }
                 newTask.setComments(comments);
