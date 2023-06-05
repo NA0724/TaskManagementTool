@@ -44,7 +44,7 @@ public class GeneratePdfReportUtil {
 	
 	@Value("${table.columnNames}")
 	private List<String> columnNames;
-
+	
 	@Autowired
 	private TaskService taskService;
 	

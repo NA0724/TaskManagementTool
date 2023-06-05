@@ -1,21 +1,28 @@
 import * as React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Alert, Container, Row, Col, Button } from "react-bootstrap";
-
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import Dashboard from "./components/Dashboard";
-import PrivateRoute from "./components/PrivateRoute";
+import Dashboard from "./components/dashboard/Dashboard";
+import Task from "./components/task/Task";
+import Profile from "./components/profile/Profile";
+import TaskDetails from "./components/taskdetails/TaskDetails";
+import UserList from "./components/userlist/UserList";
+import TaskList from "./components/tasklist/TaskList";
 
 const App: React.FC = () => {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleLoginSubmit = (email: string, password: string) => {
-    console.log("@>@ Logging in with email", email, "and password", password);
+  const chartData = {
+    labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+    datasets: [
+      {
+        label: "# of Votes",
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+      },
+    ],
   };
 
   return (
@@ -27,6 +34,11 @@ const App: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/task" element={<Task />} />
+            <Route path="/task/:taskId" element={<Task />} />
+            <Route path="/profile/" element={<Profile />} />
+            <Route path="/userList/" element={<UserList />} />
+            <Route path="/taskList/" element={<TaskList />} />
           </Routes>
         </BrowserRouter>
       </header>

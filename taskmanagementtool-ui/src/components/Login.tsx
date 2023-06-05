@@ -52,7 +52,6 @@ const Login: React.FC = () => {
       if (response.success) {
         // Redirect to the login page if createUser is successful
         navigate("/dashboard");
-        console.log("Session Value:", response.sessionValue);
       } else {
         setError("Invalid username or password. Couldnt login!");
         console.error("User login failed:", response.error);
@@ -64,21 +63,27 @@ const Login: React.FC = () => {
 
   const loginUser = async (userData: FormState) => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/loginUser",
-        {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-      );
+      const response = await fetch("http://localhost:8080/api/v1/loginUser", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(userData),
+      });
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   return { success: true, data };
+      // } else {
       if (response.ok) {
         const data = await response.json();
         const sessionValue = data.sessionValue;
-        sessionStorage.setItem('user', sessionValue);
+        const userName = data.sessionValue.split("_")[0];
+        const auth = data.sessionValue.split("_")[1].split(" ")[1];
+        sessionStorage.setItem("user", userName);
+        sessionStorage.setItem("userAuth", auth);
+        localStorage.setItem("username", userName);
         return { success: true, sessionValue };
       } else {
         const error = await response.text();

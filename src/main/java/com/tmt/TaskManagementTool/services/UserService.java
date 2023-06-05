@@ -59,15 +59,6 @@ public class UserService {
         log.info("User {} deleted", username);
     }
 
-    public Role getRoleByUsername(String username) {
-        Query query1 = new Query(Criteria.where("username").is(username));
-        User user = mongoTemplate.findOne(query1, User.class);
-        if (user != null){
-            Role role = user.getRole();
-            //role.getPermissions();
-            return role;
-        }
-        return null;
-    }
+
     
 }

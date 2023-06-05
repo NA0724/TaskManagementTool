@@ -1,5 +1,6 @@
 package com.tmt.TaskManagementTool.controllers;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @Slf4j
 public class TaskController {
 
@@ -46,24 +47,26 @@ public class TaskController {
 
     /**
      * Get all the tasks created
+     * 
      * @return
      */
     @GetMapping("/all-tasks")
     public ResponseEntity<List<Task>> getAllTasks() {
         return new ResponseEntity<List<Task>>(taskService.getAllTasks(), HttpStatus.OK);
     }
-    
+
     /**
-     * Create a new task    
+     * Create a new task
+     * 
      * @param requestBody
      * @param session
      * @return
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session){
+    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session) {
         User loggedInUser = authService.getCurrentUser(session);
         ObjectMapper objectMapper = new ObjectMapper();
-		try {
+        try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Task newTask = new Task();
             newTask.setCreatedBy(loggedInUser.getUsername());
@@ -81,32 +84,42 @@ public class TaskController {
                 List<Comment> comments = new ArrayList<>();
                 for (JsonNode commentNode : commentsNode) {
                     Comment comment = new Comment();
-                    comment.setTaskId(commentNode.get("taskId").asText());
                     comment.setBody(commentNode.get("body").asText());
-                    comment.setCreatedBy(commentNode.get("createdBy").asText());
+                    comment.setCreatedBy(loggedInUser.getUsername());
                     comments.add(comment);
                 }
                 newTask.setComments(comments);
             }
+            JsonNode attachmentsNode = jsonNode.get("attachments");
+            if (attachmentsNode != null && attachmentsNode.isArray()) {
+                List<Attachment> attachments = new ArrayList<>();
+                for (JsonNode attachmentNode : attachmentsNode) {
+                    Attachment attachment = new Attachment();
+                    attachment.setFileName(attachmentNode.get("body").asText());
+                    attachments.add(attachment);
+                }
+                newTask.setAttachments(attachments);
+            }
             return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
-        }catch (Exception e) {
-            log.error("Error creating a new task",e);
+        } catch (Exception e) {
+            log.error("Error creating a new task", e);
             return new ResponseEntity<Task>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Update Task
+     * 
      * @param tid
      * @param requestBody
      * @return
      */
     @PutMapping("/edit-task/{tid}")
-    public ResponseEntity<Task> updateTask(@PathVariable String tid, @RequestBody String requestBody){
+    public ResponseEntity<Task> updateTask(@PathVariable String tid, @RequestBody String requestBody) {
         Task task = taskService.getTaskByTid(tid);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            JsonNode jsonNode = objectMapper.readTree(requestBody);
             task.setTitle(jsonNode.get("tid").asText());
             task.setDescription(jsonNode.get("description").asText());
             task.setPriority(jsonNode.get("priority").asText());
@@ -117,7 +130,7 @@ public class TaskController {
             task.setAssignedTo(jsonNode.get("assignedTo").asText());
             taskService.updateTask(task);
             return new ResponseEntity<Task>(HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error updating task", e);
             return new ResponseEntity<Task>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -125,44 +138,47 @@ public class TaskController {
 
     /**
      * Delete Task
+     * 
      * @param tid
      */
     @GetMapping("/delete-task/{tid}")
-    public void deleteRole(@PathVariable String tid){
+    public void deleteRole(@PathVariable String tid) {
         taskService.deleteTask(tid);
     }
 
-
     /**
      * Upload files to task
+     * 
      * @param taskId
      * @param file
      * @return
      */
     @PostMapping("/{taskId}/upload")
-    public ResponseEntity<String> uploadTaskAttachments(@PathVariable("taskId") String taskId, @RequestParam("file") MultipartFile file) {
-        try{
-        Attachment attachment = new Attachment();
-        attachment.setTaskid(taskId);
-        attachment.setFileName(file.getOriginalFilename());
-        attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
-        taskService.saveAttachment(taskId, attachment);
-        return new ResponseEntity<String>("Successfully uploaded", HttpStatus.OK);
+    public ResponseEntity<String> uploadTaskAttachments(@PathVariable("taskId") String taskId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            Attachment attachment = new Attachment();
+            attachment.setTaskid(taskId);
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+            taskService.saveAttachment(taskId, attachment);
+            return new ResponseEntity<String>("Successfully uploaded", HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error uploading attachment", e);
             return new ResponseEntity<String>("Could not upload attachment", HttpStatus.EXPECTATION_FAILED);
         }
     }
-    
+
     /**
      * Get all attachments for task
+     * 
      * @param taskId
      * @return
      */
     @PostMapping("/{taskId}/attachments")
     public ResponseEntity<String> getAllAttachmentsForTask(@PathVariable("taskId") String taskId) {
-        try{
+        try {
             Task task = taskService.getTaskByTid(taskId);
             List<Attachment> attachments = task.getAttachments();
         } catch (Exception e) {
@@ -172,21 +188,21 @@ public class TaskController {
         return new ResponseEntity<String>("Successfully uploaded", HttpStatus.OK);
     }
 
-
-
     /**
      * Add a new comment to task
+     * 
      * @param taskId
      * @param session
      * @param requestBody
      * @return
      */
     @PostMapping("/{taskId}/add-comment")
-    public ResponseEntity<Comment> addComment(@PathVariable("taskId") String taskId, HttpSession session, @RequestBody String requestBody){
+    public ResponseEntity<Comment> addComment(@PathVariable("taskId") String taskId, HttpSession session,
+            @RequestBody String requestBody) {
         User user = authService.getCurrentUser(session);
         Task task = taskService.getTaskByTid(taskId);
         ObjectMapper objectMapper = new ObjectMapper();
-		try {
+        try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Comment comment = new Comment();
             List<Comment> comments = task.getComments();
@@ -196,7 +212,7 @@ public class TaskController {
             comments.add(comment);
             taskService.createCommentForTask(task, comment);
             return new ResponseEntity<Comment>(comment, HttpStatus.OK);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("Error creating comment:", e);
             return new ResponseEntity<Comment>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -204,24 +220,28 @@ public class TaskController {
 
     /**
      * Find all comments for a given task
+     * 
      * @param taskId
      * @param requestBody
      * @return
      */
     @PostMapping("/{taskid}/all-comments")
-    public ResponseEntity<List<Comment>> addComment(@PathVariable("taskId") String taskId, @RequestBody String requestBody){
+    public ResponseEntity<List<Comment>> addComment(@PathVariable("taskId") String taskId,
+            @RequestBody String requestBody) {
         return new ResponseEntity<List<Comment>>(taskService.getCommentsForTask(taskId), HttpStatus.OK);
     }
 
     /**
      * Filter tasks based on status or duedate or both
+     * 
      * @param status
      * @param dueDate
      * @return
      */
     @GetMapping("/filter")
-    public ResponseEntity<List<Task>> getAllTasksByStatusAndDueDate(@RequestParam(value = "status", required = false) String status, 
-                                        @RequestParam(value = "duedate", required = false) String dueDate) {
+    public ResponseEntity<List<Task>> getAllTasksByStatusAndDueDate(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "duedate", required = false) String dueDate) {
         if (status != null && dueDate != null) {
             // Both status and dueDate are provided
             LocalDate parsedDueDate = LocalDate.parse(dueDate);
@@ -242,5 +262,10 @@ public class TaskController {
         }
     }
 
-}
+    @GetMapping("/{taskId}")
+    public ResponseEntity<Task> uploadTaskAttachments(@PathVariable("taskId") String taskId) {
+        Task task = taskService.getTaskByTid(taskId);
+        return new ResponseEntity<Task>(task, HttpStatus.OK);
+    }
 
+}

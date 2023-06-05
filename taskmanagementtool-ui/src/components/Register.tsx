@@ -95,7 +95,7 @@ const Register: React.FC = () => {
   const createUser = async (userData: FormState) => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/registerUser",
+        "http://localhost:8080//api/v1/registerUser",
         {
           method: "POST",
           mode: "cors",
