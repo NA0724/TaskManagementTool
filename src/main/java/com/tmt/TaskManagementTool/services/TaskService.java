@@ -96,6 +96,15 @@ public class TaskService {
      */
     public Task createTask(Task task){
         task.setCreatedAt(genericUtil.getCurrentDateTime());
+        
+        if(task.getComments()!=null){
+            task.getComments().stream().forEach(c -> c.setCreatedAt(genericUtil.getCurrentDateTime()));
+            commentRepository.saveAll(task.getComments());
+        }
+        if(task.getAttachments()!=null){
+            attachmentRepository.saveAll(task.getAttachments());
+        }
+
         if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
             Notification notification = notificationService.createNotificationForTask(task.getTid());
             notification.setBody("Task " + task.getTid() + ": has been assigned to you by " + task.getCreatedBy());
@@ -103,9 +112,27 @@ public class TaskService {
             notification.setUserId(task.getAssignedTo());
             notificationService.saveNotification(notification);
         }
-        updateTask(task);
+        
+        //updateTask(task);
         return taskRepository.insert(task);
     }
+
+    /*public Task createTask(Task task){
+        task.setCreatedAt(genericUtil.getCurrentDateTime());
+        if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
+            Notification notification = notificationService.createNotificationForTask(task.getTid());
+            notification.setBody("Task " + task.getTid() + ": has been assigned to you by " + task.getCreatedBy());
+            notification.setTaskId(task.getTid());
+            notification.setUserId(task.getAssignedTo());
+            notificationService.saveNotification(notification);
+        }
+        if(task.getComments()!=null){
+            comment.setCreatedAt(genericUtil.getCurrentDateTime());
+            commentRepository.insert(comment);
+        }
+        updateTask(task);
+        return taskRepository.insert(task);
+    }*/
 
     public Task getTaskByTid(String tid){
         Optional<Task> taskOptional = taskRepository.findTaskByTid(tid);
@@ -121,6 +148,15 @@ public class TaskService {
 
     public Task updateTask(Task task) {
         Task oldTask = getTaskByTid(task.getTid());
+
+        if(task.getComments()!=null){
+            task.getComments().stream().forEach(c -> c.setCreatedAt(genericUtil.getCurrentDateTime()));
+            commentRepository.saveAll(task.getComments());
+        }
+        if(task.getAttachments()!=null){
+            attachmentRepository.saveAll(task.getAttachments());
+        }
+        
         Notification notification = notificationService.createNotificationForTask(task.getTid());
         
         if(!(oldTask.getStatus()==oldTask.getStatus())){
@@ -195,6 +231,11 @@ public class TaskService {
             userTask.setAssignedTo(task.getAssignedTo());
         }
         userTaskRepository.save(userTask);
+    }
+
+    public List<Task> getTaskByTitleLike(String keyword){
+        List<Task> taskList = taskRepository.findTasksByTitleLike(keyword);
+        return taskList;
     }
 
 }

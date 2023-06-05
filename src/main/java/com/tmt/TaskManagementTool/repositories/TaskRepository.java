@@ -21,5 +21,7 @@ public interface TaskRepository extends MongoRepository<Task, ObjectId>{
     List<Task> findTasksByStatusAndDueDate(String status, LocalDate dueDate);
     @Query("{ 'dueDate' : { $lt: ?0 } }")
     List<Task> findTasksByDueDateBefore(LocalDate date);
-
+    @Query("{ 'title': { $regex: ?0, $options: 'i' } }")
+    List<Task> findTasksByTitleLike(String keyword);
+    List<Task> findTasksByTitle(String title);
 }
