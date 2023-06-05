@@ -80,9 +80,9 @@ const Login: React.FC = () => {
         const data = await response.json();
         const sessionValue = data.sessionValue;
         const userName = data.sessionValue.split("_")[0];
-        const auth = data.sessionValue.split("_")[1].split(" ")[1];
+        //const auth = data.sessionValue.split("_")[1].split(" ")[1];
         sessionStorage.setItem("user", userName);
-        sessionStorage.setItem("userAuth", auth);
+        //sessionStorage.setItem("userAuth", auth);
         localStorage.setItem("username", userName);
         return { success: true, sessionValue };
       } else {
