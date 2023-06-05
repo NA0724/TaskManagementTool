@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,13 +64,14 @@ public class TaskController {
      * @return
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session) {
-        User loggedInUser = authService.getCurrentUser(session);
+    public ResponseEntity<Task> createTask(@RequestPart("task") String requestBody, HttpSession session,@RequestParam("file") MultipartFile file){
+       // User loggedInUser = authService.getCurrentUser(session);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Task newTask = new Task();
-            newTask.setCreatedBy(loggedInUser.getUsername());
+           // newTask.setCreatedBy(loggedInUser.getUsername());
+           newTask.setCreatedBy(jsonNode.get("createdBy").asText());
             newTask.setTid(jsonNode.get("tid").asText());
             newTask.setTitle(jsonNode.get("title").asText());
             newTask.setDescription(jsonNode.get("description").asText());
@@ -91,13 +93,15 @@ public class TaskController {
                 newTask.setComments(comments);
             }
             JsonNode attachmentsNode = jsonNode.get("attachments");
-            if (attachmentsNode != null && attachmentsNode.isArray()) {
+            if (file != null && attachmentsNode.isArray()) {
                 List<Attachment> attachments = new ArrayList<>();
-                for (JsonNode attachmentNode : attachmentsNode) {
+                //attach only one file at a time
                     Attachment attachment = new Attachment();
-                    attachment.setFileName(attachmentNode.get("body").asText());
+                    attachment.setTaskid(jsonNode.get("tid").asText());
+                    attachment.setFileName(file.getOriginalFilename());
+                    attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
                     attachments.add(attachment);
-                }
+
                 newTask.setAttachments(attachments);
             }
             return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
@@ -115,19 +119,43 @@ public class TaskController {
      * @return
      */
     @PutMapping("/edit-task/{tid}")
-    public ResponseEntity<Task> updateTask(@PathVariable String tid, @RequestBody String requestBody) {
+    public ResponseEntity<Task> updateTask(@PathVariable String tid, @RequestPart("task") String requestBody, @RequestParam("file") MultipartFile file){
         Task task = taskService.getTaskByTid(tid);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            JsonNode jsonNode = objectMapper.readTree(requestBody);
-            task.setTitle(jsonNode.get("tid").asText());
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            task.setTitle(jsonNode.get("title").asText());
             task.setDescription(jsonNode.get("description").asText());
             task.setPriority(jsonNode.get("priority").asText());
-            task.setStatus(jsonNode.get("status").asText());
+            task.setStatus("NEW");
             task.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
             task.setTaskType(jsonNode.get("taskType").asText());
             task.setTaskCategory(jsonNode.get("taskCategory").asText());
             task.setAssignedTo(jsonNode.get("assignedTo").asText());
+            JsonNode commentsNode = jsonNode.get("comments");
+            if (commentsNode != null && commentsNode.isArray()) {
+                List<Comment> comments = task.getComments();
+                for (JsonNode commentNode : commentsNode) {
+                    Comment comment = new Comment();
+                    comment.setTaskId(tid);
+                    comment.setBody(commentNode.get("body").asText());
+                    comment.setCreatedBy(commentNode.get("createdBy").asText());
+                    comments.add(comment);
+                }
+                task.setComments(comments);
+            }
+            JsonNode attachmentsNode = jsonNode.get("attachments");
+            if (file != null && attachmentsNode.isArray()) {
+                List<Attachment> attachments = task.getAttachments();
+                //attach only one file at a time
+                    Attachment attachment = new Attachment();
+                    attachment.setTaskid(jsonNode.get("tid").asText());
+                    attachment.setFileName(file.getOriginalFilename());
+                    attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+                    attachments.add(attachment);
+                
+                task.setAttachments(attachments);;
+            }
             taskService.updateTask(task);
             return new ResponseEntity<Task>(HttpStatus.OK);
         } catch (Exception e) {
@@ -141,8 +169,9 @@ public class TaskController {
      * 
      * @param tid
      */
-    @GetMapping("/delete-task/{tid}")
-    public void deleteRole(@PathVariable String tid) {
+
+    @PostMapping("/delete-task/{tid}")
+    public void deleteRole(@PathVariable String tid){
         taskService.deleteTask(tid);
     }
 
@@ -176,16 +205,22 @@ public class TaskController {
      * @param taskId
      * @return
      */
-    @PostMapping("/{taskId}/attachments")
-    public ResponseEntity<String> getAllAttachmentsForTask(@PathVariable("taskId") String taskId) {
-        try {
+
+    @GetMapping("/{taskId}/attachments")
+    public ResponseEntity<List<Attachment>> getAllAttachmentsForTask(@PathVariable("taskId") String taskId) {
+        try{
             Task task = taskService.getTaskByTid(taskId);
             List<Attachment> attachments = task.getAttachments();
+            if(attachments != null){
+                return new ResponseEntity<List<Attachment>>(attachments, HttpStatus.OK);
+            }else{
+                log.info("No attachments found for task id " + taskId);
+                return new ResponseEntity<List<Attachment>>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<String>("Could not upload attachment", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<List<Attachment>>(HttpStatus.EXPECTATION_FAILED);
         }
-        return new ResponseEntity<String>("Successfully uploaded", HttpStatus.OK);
     }
 
     /**
@@ -225,10 +260,11 @@ public class TaskController {
      * @param requestBody
      * @return
      */
-    @PostMapping("/{taskid}/all-comments")
-    public ResponseEntity<List<Comment>> addComment(@PathVariable("taskId") String taskId,
-            @RequestBody String requestBody) {
-        return new ResponseEntity<List<Comment>>(taskService.getCommentsForTask(taskId), HttpStatus.OK);
+
+    @GetMapping("/{taskid}/all-comments")
+    public ResponseEntity<List<Comment>> addComment(@PathVariable String taskid){
+        return new ResponseEntity<List<Comment>>(taskService.getCommentsForTask(taskid), HttpStatus.OK); 
+
     }
 
     /**
@@ -262,10 +298,28 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/{taskId}")
-    public ResponseEntity<Task> uploadTaskAttachments(@PathVariable("taskId") String taskId) {
-        Task task = taskService.getTaskByTid(taskId);
-        return new ResponseEntity<Task>(task, HttpStatus.OK);
+    /**
+     * Get Task by TaskId
+     * @param tid
+     * @return
+     */
+    @GetMapping("/{tid}")
+    public ResponseEntity<Task> getTaskByTaskId(@PathVariable String tid){
+        return new ResponseEntity<Task>(taskService.getTaskByTid(tid), HttpStatus.OK);
+    }
+
+    /**
+     * Get task list by typing keyword in task title
+     * @param keyword
+     * @return
+     */
+    @GetMapping("/title")
+    public ResponseEntity<List<Task>> getTaskByTitleLike(@RequestParam("like") String keyword){
+        log.info("Search for task with keyword: " + keyword);
+        return new ResponseEntity<List<Task>>(taskService.getTaskByTitleLike(keyword), HttpStatus.OK);
     }
 
 }
+
+
+
