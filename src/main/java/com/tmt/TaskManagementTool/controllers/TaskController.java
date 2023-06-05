@@ -124,7 +124,7 @@ public class TaskController {
             task.setTitle(jsonNode.get("title").asText());
             task.setDescription(jsonNode.get("description").asText());
             task.setPriority(jsonNode.get("priority").asText());
-            task.setStatus(jsonNode.get("status").asText());
+            task.setStatus("NEW");
             task.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
             task.setTaskType(jsonNode.get("taskType").asText());
             task.setTaskCategory(jsonNode.get("taskCategory").asText());
