@@ -91,11 +91,9 @@ public class TaskController {
                     comments.add(comment);
                 }
                 newTask.setComments(comments);
-            }
-            JsonNode attachmentsNode = jsonNode.get("attachments");
-            if (file != null && attachmentsNode.isArray()) {
-                List<Attachment> attachments = new ArrayList<>();
-                //attach only one file at a time
+                }
+            if(file!=null && !file.isEmpty()) {
+                ArrayList<Attachment> attachments = new ArrayList<>();
                     Attachment attachment = new Attachment();
                     attachment.setTaskid(jsonNode.get("tid").asText());
                     attachment.setFileName(file.getOriginalFilename());

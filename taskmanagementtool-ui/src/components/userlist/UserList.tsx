@@ -346,28 +346,29 @@ const UserList: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>Role</TableCell>
-                  <TableCell>Permission</TableCell>
-                  <TableCell>Update</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>USERNAME</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>EMAIL</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>FIRST NAME</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>LAST NAME</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>ROLE</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>PERMISSION</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>UPDATE</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.username}>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.firstname}</TableCell>
-                    <TableCell>{user.lastname}</TableCell>
+                {users.map((user, index) => (
+                  <TableRow key={user.username} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                    <TableCell sx={{ textAlign: "center" }}>{user.username}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{user.email}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{user.firstname}</TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>{user.lastname}</TableCell>
                     <TableCell>
                       <Select
                         value={user.role || ""}
                         onChange={(event) =>
                           handleRoleChange(event, user.username)
                         }
+                        sx={{ width: "100%" }}
                       >
                         {roles.map((role) => (
                           <MenuItem key={role} value={role}>
@@ -382,6 +383,7 @@ const UserList: React.FC = () => {
                         onChange={(event) =>
                           handlePermissionChange(event, user.username)
                         }
+                        sx={{ width: "100%" }}
                       >
                         {permissions.map((permission) => (
                           <MenuItem key={permission} value={permission}>
@@ -390,7 +392,7 @@ const UserList: React.FC = () => {
                         ))}
                       </Select>
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
                       <IconButton onClick={() => handleSaveUser(user.username)}>
                         <Save color="primary" />
                       </IconButton>

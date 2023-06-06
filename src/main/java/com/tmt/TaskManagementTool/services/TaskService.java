@@ -60,7 +60,7 @@ public class TaskService {
         User user = userService.getUserByUsername(username);
 
         List<Task> allTasks = taskRepository.findTasksByCreatedBy(user.getUsername());
-        log.info("found tasks for user " + user.getUsername());
+        log.info("found tasks created by user " + user.getUsername());
         return allTasks;
     }
 
@@ -76,7 +76,7 @@ public class TaskService {
         User user = userService.getUserByUsername(username);
 
         List<Task> allTasks = taskRepository.findTasksByAssignedTo(user.getUsername());
-        log.info("found tasks for user " + user.getUsername());
+        log.info("found tasks assigned to user " + user.getUsername());
         return allTasks;
     }
 
@@ -105,7 +105,9 @@ public class TaskService {
      */
     public int countTaskByStatus(String status) {
         List<Task> allTaskByStatus = taskRepository.findTasksByStatus(status);
-        return allTaskByStatus.size();
+        int size = allTaskByStatus.size();
+        log.info("Task count with status {}: " + size, status);
+        return size;
     }
 
     /**

@@ -51,24 +51,63 @@ const TaskCard: React.FC<TaskCardProps> = ({
           marginBottom: "0.5rem",
         }}
       >
-        <Typography variant="h6" component="div">
+        <Typography variant="h6" component="div" sx={{ fontWeight: "bold", color: "#2762b9" }}>
           <Link
             to={`/task/${tid}`} // Append tid to the URL
             style={{ textDecoration: "hyperlink", color: "inherit" }}
           >
-            Task:{tid}
+            {tid}
           </Link>
         </Typography>
+        <Box
+          sx={{
+            backgroundColor: status === "Completed" ? "#4CAF50" : status === "New" ? "#B053BF" : "#FF9800",
+            color: "#fff",
+            padding: "0.25rem",
+            borderRadius: "4px",
+            fontSize: "0.875rem",
+            marginLeft: "auto",
+          }}
+        >
+          {status}
+        </Box>
+        
+      </Box>
+ 
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "left",
+          marginBottom: "0.5rem",
+        }}
+      >
+        <Typography variant="body1" component="div">
+          {title}
+        </Typography>
+        <Box
+  sx={{
+    backgroundColor: priority === "High" ? "#F44336" : priority === "Medium" ? "#CEBD25" : "#2196F3",
+    color: "#fff",
+    padding: "0.25rem",
+    borderRadius: "4px",
+    marginLeft: "auto",
+    fontSize: "0.875rem",
+  }}
+>
+  {priority}
+</Box>
       </Box>
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
+          alignItems: "left",
+          justifyContent: "space-between",
           marginBottom: "0.5rem",
         }}
       >
+        
         <Typography variant="body2" component="div">
-          Title: {title}
+        <span style={{ fontWeight: "bold" }}>Assigned To:</span>  {assignedTo}
         </Typography>
       </Box>
       <Box
@@ -80,10 +119,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         }}
       >
         <Typography variant="body2" component="div">
-          Description: {description}
-        </Typography>
-        <Typography variant="body2" component="div">
-          Priority: {priority}
+        <span style={{ fontWeight: "bold" }}>Owner:</span> {assignedTo}
         </Typography>
       </Box>
       <Box
@@ -95,25 +131,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         }}
       >
         <Typography variant="body2" component="div">
-          Owner: {assignedTo}
-        </Typography>
-        <Typography variant="body2" component="div">
-          Status: {status}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "left",
-          justifyContent: "space-between",
-          marginBottom: "0.5rem",
-        }}
-      >
-        <Typography variant="body2" component="div">
-          Due Date: {dueDate}
-        </Typography>
-        <Typography variant="body2" component="div">
-          Category: {taskCategory}
+        <span style={{ fontWeight: "bold" }}>Due Date:</span> {dueDate}
         </Typography>
       </Box>
     </Paper>

@@ -37,21 +37,17 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
   );
 
   const [loading, setLoading] = useState(false);
+  const [tid, setTid] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [assignee, setAssignee] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
-  const [assignedBy, setAssignedBy] = useState("");
-  const [assignedDate, setAssignedDate] = useState("");
-  const [assignedTime, setAssignedTime] = useState("");
-  const [dueTime, setDueTime] = useState("");
   const [comment, setComment] = useState("");
   const [taskType, setTaskType] = useState("");
   const [taskCategory, setTaskCategory] = useState("General");
   const [status, setStatus] = useState("New");
-  const [attachment, setAttachment] = useState<string>("");
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   const user = sessionStorage.getItem("user");
@@ -83,11 +79,10 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
     setDueDate(event.target.value);
   };
 
-  const handleAttachmentChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAttachmentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setAttachment(event.target.files[0].name);
+      const fileList = Array.from(event.target.files);
+      setAttachments(fileList);
     }
   };
 
@@ -96,21 +91,25 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
     var tid = `${id}`;
     console.log("handle Submit of Add Task");
     var comments = [{ body: comment }];
-    var attachments = [{ body: attachment }];
-    const formData = {
-      title,
-      description,
-      priority,
-      dueDate,
-      assignedTo,
-      taskType,
-      taskCategory,
-      attachments,
-      comments,
-      status,
-      tid,
-    };
 
+  const formData = new FormData();
+  formData.append("task", JSON.stringify({
+    createdBy: user,
+    tid: tid,
+    title: title,
+    description: description,
+    status: status,
+    priority: priority,
+    assignedTo: assignedTo,
+    dueDate: dueDate,
+    taskType: taskType,
+    taskCategory: taskCategory,
+    comments: comments,
+  }));
+
+  attachments.forEach((attachment, index) => {
+    formData.append("file", attachment);
+  });
     try {
       const response = await fetch(
         "http://localhost:8080/api/v1/tasks/create-task",
@@ -118,10 +117,9 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
           method: "POST",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
-          body: JSON.stringify(formData),
+          body: formData,
         }
       );
       const data = await response.json();
@@ -136,13 +134,19 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Typography variant="h6" component="div" gutterBottom>
-        Add Task
+    <Box marginTop={2} display="flex" flexDirection="column" height="100%">
+      <Typography variant="h6" component="div" gutterBottom sx={{ fontWeight: "bold", color: "#2762b9" }}>
+        CREATE NEW TASK
       </Typography>
 
-      <Box flexGrow={1} display="flex" flexDirection="column">
+      <Box marginTop={2} flexGrow={1} display="flex" flexDirection="column">
         <form onSubmit={handleSubmit}>
+        <InputLabel id="priority-label">Task Id</InputLabel>
+          <TextField
+            value={tid}
+            onChange={(e) => setTid(e.target.value)}
+            fullWidth
+          />
           <InputLabel id="priority-label">Title</InputLabel>
           <TextField
             value={title}
@@ -173,7 +177,7 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
             onChange={handleDateChange}
             className="datepicker-input"
           />
-          <InputLabel id="priority-label">AssingedTo</InputLabel>
+          <InputLabel id="priority-label">Assign To</InputLabel>
           <Select
             labelId="user-label"
             value={selectedUser}
@@ -187,32 +191,51 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
               <MenuItem value={user.username}>{user.username}</MenuItem>
             ))}
           </Select>
-          <InputLabel id="priority-label">Task Type</InputLabel>
+          <InputLabel id="priority-label">Type</InputLabel>
           <TextField
             value={taskType}
             onChange={(e) => setTaskType(e.target.value)}
             fullWidth
           />
-          <InputLabel id="priority-label">Comments</InputLabel>
+          <InputLabel id="priority-label">Add Comment</InputLabel>
           <TextareaAutosize
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             style={{ width: "100%" }}
             minRows={3}
           />
-          <InputLabel id="priority-label">attachment</InputLabel>
+          <InputLabel id="priority-label">Attach a File</InputLabel>
           <input type="file" onChange={handleAttachmentChange} multiple />
         </form>
+        <br /> 
       </Box>
 
-      <Box marginTop="auto">
-        {loading ? (
-          <CircularProgress />
-        ) : (
-          <Button onClick={handleSubmit}>Submit</Button>
-        )}
-        <Button onClick={onCancel}>Cancel</Button>
-      </Box>
+      <Box marginTop="item">
+  {loading ? (
+    <CircularProgress />
+  ) : (
+    <Button
+      onClick={handleSubmit}
+      sx={{
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        marginRight: "1rem",
+      }}
+    >
+      Submit
+    </Button>
+  )}
+  <Button
+    onClick={onCancel}
+    sx={{
+      backgroundColor: "#FF0000",
+      color: "#fff",
+    }}
+  >
+    Cancel
+  </Button>
+</Box>
+
     </Box>
   );
 };

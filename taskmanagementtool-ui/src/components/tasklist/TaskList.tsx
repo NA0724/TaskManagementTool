@@ -20,6 +20,8 @@ import {
   Tooltip,
   Box,
   TextField,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+ 
 } from "@mui/material";
 import {
   Search,
@@ -39,6 +41,7 @@ import NotificationPane from "../notification/NotificationPane";
 
 interface Task {
   id: number;
+  tid:number;
   title: string;
   description: string;
   status: string;
@@ -267,7 +270,7 @@ const TaskList = () => {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className="custom-content-container">
         <Grid item xs={12}>
           <Paper>
             <Typography variant="h6" component="div" sx={{ p: 2 }}>
@@ -330,50 +333,38 @@ const TaskList = () => {
               </Grid>
             </div>
 
-            <List>
-              {filteredTasks.map((task) => (
-                <ListItem key={task.id}>
-                  <ListItemText
-                    primary={task.title}
-                    secondary={
-                      <React.Fragment>
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="textPrimary"
-                        >
-                          Description: {task.description}
-                        </Typography>
-                        <br />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="textPrimary"
-                        >
-                          Status: {task.status}
-                        </Typography>
-                        <br />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="textPrimary"
-                        >
-                          Assigned To: {task.assignedTo}
-                        </Typography>
-                        <br />
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          color="textPrimary"
-                        >
-                          Due Date: {task.dueDate}
-                        </Typography>
-                      </React.Fragment>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <TableContainer component={Paper}>
+  <Table>
+    <TableHead>
+      <TableRow>
+      <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>TASK ID</TableCell>
+        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>TITLE</TableCell>
+        <TableCell sx={{ fontWeight: "bold", textAlign: "center" , wordWrap: "break-word"}}>DESCRIPTION</TableCell>
+        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>STATUS</TableCell>
+        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>ASSIGNEE</TableCell>
+        <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>DEADLINE</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {filteredTasks.map((task, index) => (
+        <TableRow key={task.id} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+          <TableCell sx={{ textAlign: "center" }}>{task.tid}</TableCell>
+          <TableCell>{task.title}</TableCell>
+          <TableCell>{task.description}</TableCell>
+          <TableCell sx={{ textAlign: "center" }}>{task.status}</TableCell>
+          <TableCell sx={{ textAlign: "center" }}>{task.assignedTo}</TableCell>
+          <TableCell sx={{ textAlign: "center" }}>{task.dueDate}</TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+
+
+
+
+
           </Paper>
         </Grid>
       </Grid>

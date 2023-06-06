@@ -178,7 +178,7 @@ const Dashboard: React.FC = () => {
         }
       );
       const data = await response.json();
-      setTasks(data.tasksCreatedBy);
+      setTasks(data.tasksAssignedTo);
       setcompletedTasksCount(data.completedTasksCount);
       setinProgressTasksCount(data.inProgressTasksCount);
       setnewTaskCount(data.newTaskCount);
@@ -263,6 +263,7 @@ const Dashboard: React.FC = () => {
         </Toolbar>
       </AppBar>
 
+     
       {/* SIDE MENU GRID */}
       <Grid container spacing={2} className="content-container">
         <Grid item xs={3} className="drawer-container">
@@ -284,7 +285,7 @@ const Dashboard: React.FC = () => {
       </Grid>
 
       {/* Top Row */}
-      <Grid item xs={3}>
+      <Grid item xs={6}>
         <Box display="flex" alignItems="center" mb={2}>
           <Typography variant="h6" component="span">
             My Tasks
@@ -295,14 +296,13 @@ const Dashboard: React.FC = () => {
       {/* Tasks Grid - Takes 70% of the width */}
 
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={9}>
           <Grid container spacing={2}>
             {tasks.map((task) => (
-              <Grid item xs={4} key={task.id}>
+              <Grid item xs={3} key={task.id}>
                 <TaskCard
                   tid={task.tid}
                   title={task.title}
-                  description={task.description}
                   priority={task.priority}
                   assignedTo={task.assignedTo}
                   status={task.status}
@@ -314,20 +314,7 @@ const Dashboard: React.FC = () => {
           </Grid>
         </Grid>
 
-        {/* Vertical Menu - Takes 30% of the width */}
-        <Grid item xs={2} className="sidebar">
-          <List component="nav" aria-label="menu">
-            <ListItem button>
-              <ListItemText primary={`New ${completedTasksCount}`} />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary={`In Progress ${inProgressTasksCount}`} />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary={`Completed ${completedTasksCount}`} />
-            </ListItem>
-          </List>
-        </Grid>
+        
       </Grid>
 
       {/* SECOND PORTION */}
@@ -351,7 +338,6 @@ const Dashboard: React.FC = () => {
                     <TaskCard
                       tid={task.tid}
                       title={task.title}
-                      description={task.description}
                       priority={task.priority}
                       assignedTo={task.assignedTo}
                       status={task.status}

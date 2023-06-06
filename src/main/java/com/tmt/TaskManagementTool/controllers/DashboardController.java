@@ -73,6 +73,7 @@ public class DashboardController {
         dashboardData.setInProgressTasksCount(inProgressTasksCount);
         dashboardData.setTasksAssignedTo(tasks);
         dashboardData.setNotifications(notifications);
+        log.info("New {}, Inprogress {}, Completed {}", newTasksCount, inProgressTasksCount, completedTasksCount);
         return new ResponseEntity<DasboardData>(dashboardData, HttpStatus.OK);
     }
 

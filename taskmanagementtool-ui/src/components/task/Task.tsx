@@ -23,6 +23,8 @@ import {
   Stack,
   TextField,
   Button,
+  Chip,
+  Avatar
 } from "@mui/material";
 import {
   Search,
@@ -573,11 +575,15 @@ const Task: React.FC = () => {
               <Grid item xs={12} sm={6}>
                 <InputLabel shrink>Attachments</InputLabel>
                 <List dense sx={{ fontSize: "12px" }}>
-                  {attachments.map((attachment) => (
-                    <ListItem key={attachment.id}>
-                      <ListItemText primary={attachment.filename} />
-                    </ListItem>
-                  ))}
+                {attachments.map((attachment) => (
+              <Chip
+                key={attachment.id}
+                avatar={<Avatar>{attachment.filename[0]}</Avatar>}
+                label={attachment.filename}
+                
+                sx={{ marginRight: "0.5rem", marginBottom: "0.5rem" }}
+              />
+            ))}
                 </List>
                 <input
                   type="file"
@@ -588,7 +594,7 @@ const Task: React.FC = () => {
                 {/* Add Attachment button */}
                 <Button
                   onClick={handleAddAttachment}
-                  disabled={!selectedFile}
+                  //disabled={!selectedFile}
                   variant="outlined"
                   color="primary"
                 >

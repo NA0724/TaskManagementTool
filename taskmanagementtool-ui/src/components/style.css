@@ -1,0 +1,16 @@
+.dashboard-container {
+    background-image: url("../images/background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+.tableContainer {
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)';
+    maxWidth: 500;
+    margin: '0 auto';
+  }
+
+.custom-content-container {
+    maxWidth: 500;
+    margin: '0 auto';
+}
