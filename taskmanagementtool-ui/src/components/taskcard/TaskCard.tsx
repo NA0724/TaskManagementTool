@@ -43,7 +43,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   attachments,
 }) => {
   return (
-    <Paper elevation={3} sx={{ padding: "1rem", marginBottom: "1rem",  backgroundColor: "#FEFFD6"}}>
+    <Paper elevation={3} sx={{ padding: "1.5rem", marginBottom: "1rem",  backgroundColor: "#FEFFD6"}}>
       <Box
         sx={{
           display: "flex",

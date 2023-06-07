@@ -5,6 +5,8 @@ import Container from "react-bootstrap/Container";
 import { Link, useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Card } from "react-bootstrap";
+import "./style.css";
 
 interface FormState {
   username: string;
@@ -96,13 +98,14 @@ const Login: React.FC = () => {
 
   return (
     <Container
-      className="d-flex justify-content-center align-items-center vh-100 custom-container"
-      style={{ fontSize: "14px", backgroundImage: "url('../images/background1.jpg')"}}
+      className="d-flex justify-content-center align-items-center custom-container"
+      
     >
-      <div className="border p-4">
+      <Card style={{ width: '300px', backgroundColor: 'white', padding: '1rem' , color: 'black'}}>
+       <h5>Login</h5>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="username">
-            <Form.Label>Username</Form.Label>
+            <Form.Label className="label-black">Username</Form.Label>
             <Form.Control
               type="text"
               name="username"
@@ -123,7 +126,7 @@ const Login: React.FC = () => {
           </Form.Group>
 
           <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
+            <Form.Label className="label-black">Password</Form.Label>
             <Form.Control
               type="password"
               name="password"
@@ -149,14 +152,14 @@ const Login: React.FC = () => {
             <Col>
               <Button type="submit">Login</Button>
             </Col>
-            <Col xs="auto">
+            <Col >
               <Link to="/">
                 <Button variant="secondary">Cancel</Button>
               </Link>
             </Col>
           </Row>
         </Form>
-      </div>
+      </Card>
     </Container>
   );
 };

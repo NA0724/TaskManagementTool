@@ -134,7 +134,7 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
   };
 
   return (
-    <Box marginTop={2} display="flex" flexDirection="column" height="100%">
+    <Box marginTop={2} display="flex" flexDirection="column" height="100%" >
       <Typography variant="h6" component="div" gutterBottom sx={{ fontWeight: "bold", color: "#2762b9" }}>
         CREATE NEW TASK
       </Typography>

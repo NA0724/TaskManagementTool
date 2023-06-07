@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -72,6 +73,23 @@ public class UserController {
             newUser.setEmail(jsonNode.get("email").asText());
             newUser.setUsername(jsonNode.get("username").asText());
             newUser.setPassword(jsonNode.get("password").asText());
+            JsonNode roleNode = jsonNode.get("role");
+            if (roleNode != null) {
+                Role newRole = new Role();
+                newRole.setRid(roleNode.get("rid").asText());
+                newRole.setName(roleNode.get("name").asText());
+                ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
+                
+                    List<String> permissions = new ArrayList<>();
+                    for (JsonNode per : permissionNode) {
+                        permissions.add(per.asText());
+                    }
+                    newRole.setPermissions(permissions);
+                
+                newUser.setRole(newRole);
+            }
+            
+
             return new ResponseEntity<User>(userService.createUser(newUser), HttpStatus.CREATED);
         } catch (Exception e) {
             System.out.println("@>@ Exception occurred in creating new user : " + e);
@@ -92,10 +110,43 @@ public class UserController {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
-            user.setEmail(jsonNode.get("email").asText());
-            user.setPassword(jsonNode.get("password").asText());
-            userService.updateUser(user);
-            return new ResponseEntity<User>(HttpStatus.OK);
+
+            if (jsonNode.get("firstname").asText()!=null){
+                user.setFirstname(jsonNode.get("firstname").asText());
+            }
+            if(jsonNode.get("lastname").asText()!=null){
+                user.setLastname(jsonNode.get("lastname").asText());
+            }
+            if(jsonNode.get("email").asText()!=null){
+                user.setEmail(jsonNode.get("email").asText());
+            }
+            if(jsonNode.get("password").asText()!=null){
+                user.setPassword(jsonNode.get("password").asText());
+            }
+if(jsonNode.get("username").asText()!=null){
+    user.setUsername(jsonNode.get("username").asText());
+}
+            
+            
+            
+            
+            
+            JsonNode roleNode = jsonNode.get("role");
+            if (roleNode != null) {
+                Role newRole = new Role();
+                newRole.setRid(roleNode.get("rid").asText());
+                newRole.setName(roleNode.get("name").asText());
+                ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
+               
+                    List<String> permissions = new ArrayList<>();
+                    for (JsonNode per : permissionNode) {
+                        permissions.add(per.asText());
+                    }
+                    newRole.setPermissions(permissions);
+                
+                user.setRole(newRole);
+                }
+            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("@>@ Exception occurred in updating user : " + e);
         }
@@ -170,18 +221,19 @@ public class UserController {
             } else {
                 role.setRid(rid);
                 role.setName(jsonNode.get("name").asText());
-                JsonNode permissionNode = jsonNode.get("permission");
-                if (permissionNode != null && permissionNode.isArray()) {
+                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
+                
                     List<String> permissions = new ArrayList<>();
                     for (JsonNode per : permissionNode) {
                         permissions.add(per.asText());
                     }
                     role.setPermissions(permissions);
-                }
+                
                 roleService.createRole(role);
             }
             user.setRole(role);
-            return new ResponseEntity<User>(HttpStatus.OK);
+            
+            return new ResponseEntity<User>(userService.updateUser(user),HttpStatus.OK);
         } catch (Exception e) {
             log.error("Cannot assign role to user", e);
             return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);

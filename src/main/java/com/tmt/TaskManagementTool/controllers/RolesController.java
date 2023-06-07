@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.services.AuthService;
@@ -65,30 +66,28 @@ public class RolesController {
      */
     @PutMapping("/create-role")
     public ResponseEntity<Role> createRole(@RequestBody String reqString, HttpSession session) {
-        User user = authService.getCurrentUser(session);
-        if (user.getRole().equals(roleService.getRoleByName("Manager"))) {
+       // User user = authService.getCurrentUser(session);
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonNode jsonNode = objectMapper.readTree(reqString);
                 Role role = new Role();
                 role.setRid(jsonNode.get("rid").asText());
                 role.setName(jsonNode.get("name").asText());
-                JsonNode permissionNode = jsonNode.get("permission");
-                if (permissionNode != null && permissionNode.isArray()) {
+                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
                     List<String> permissions = new ArrayList<>();
                     for (JsonNode per : permissionNode) {
                         permissions.add(per.asText());
                     }
                     role.setPermissions(permissions);
-                }
+                
                 return new ResponseEntity<Role>(roleService.createRole(role), HttpStatus.OK);
             } catch (Exception e) {
                 log.error("Cannot create new Role", e);
                 return new ResponseEntity<Role>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }
-        log.info("Logged in user does not have the permission to create role");
-        return new ResponseEntity<Role>(HttpStatus.UNAUTHORIZED);
+        
+        //log.info("Logged in user does not have the permission to create role");
+        //return new ResponseEntity<Role>(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -108,14 +107,13 @@ public class RolesController {
                 JsonNode jsonNode = objectMapper.readTree(reqString);
                 Role role = roleService.getRoleByRid(rid);
                 role.setName(jsonNode.get("name").asText());
-                JsonNode permissionNode = jsonNode.get("permissions");
-                if (permissionNode != null && permissionNode.isArray()) {
-                    List<String> permissions = new ArrayList<>();
+                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
+                List<String> permissions = new ArrayList<>();
                     for (JsonNode per : permissionNode) {
                         permissions.add(per.asText());
                     }
                     role.setPermissions(permissions);
-                }
+                
                 return new ResponseEntity<Role>(roleService.updateRole(role), HttpStatus.OK);
             } catch (Exception e) {
                 log.error("Cannot update Role", e);
@@ -150,15 +148,15 @@ public class RolesController {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonNode jsonNode = objectMapper.readTree(requestBody);
-                JsonNode permissionNode = jsonNode.get("permissions");
+                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
                 Role role = roleService.getRoleByRid(rid);
-                if (permissionNode != null && permissionNode.isArray()) {
+                
                     List<String> permissions = role.getPermissions();
                     for (JsonNode permission : permissionNode) {
                         permissions.add(permission.asText());
                     }
                     role.setPermissions(permissions);
-                }
+                
                 return new ResponseEntity<Role>(roleService.updateRole(role), HttpStatus.CREATED);
             } catch (Exception e) {
                 log.error("Error creating permission", e);
@@ -183,15 +181,15 @@ public class RolesController {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 JsonNode jsonNode = objectMapper.readTree(requestBody);
-                JsonNode permissionNode = jsonNode.get("permissions");
+                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
                 Role role = roleService.getRoleByRid(rid);
-                if (permissionNode != null && permissionNode.isArray()) {
+                
                     List<String> permissions = new ArrayList<>();
                     for (JsonNode permission : permissionNode) {
                         permissions.add(permission.asText());
                     }
                     role.setPermissions(permissions);
-                }
+                
                 return new ResponseEntity<Role>(roleService.updateRole(role), HttpStatus.CREATED);
             } catch (Exception e) {
                 log.error("Error updating permission", e);

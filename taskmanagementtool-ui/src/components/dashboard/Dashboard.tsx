@@ -293,7 +293,7 @@ const Dashboard: React.FC = () => {
 
       {/* Top Row */}
       <Grid item xs={3}>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box display="flex" alignItems="center" mb={2} paddingTop={'50px'}>
           <Typography variant="h3" component="span" fontWeight="bold">
             My Tasks
           </Typography>
@@ -304,9 +304,9 @@ const Dashboard: React.FC = () => {
       </Backdrop>
       {/* Tasks Grid - Takes 70% of the width */}
 
-      <Grid container spacing={2}>
-        <Grid item xs={9}>
-          <Grid container spacing={2}>
+      <Grid container spacing={10} paddingLeft={'80px'} paddingRight={'80px'}>
+        <Grid item xs={10}>
+          <Grid container spacing={3}>
             {tasks.map((task) => (
               <Grid item xs={3} key={task.id}>
                 <TaskCard

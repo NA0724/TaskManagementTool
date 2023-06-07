@@ -117,6 +117,33 @@ const OurReport: React.FC = () => {
     setNotificationPaneOpen(false);
   };
 
+
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/home/notifications`,
+        {
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+      const data = await response.json();
+      const bodyElements = data.map((d: any) => d.body);
+      console.log(bodyElements);
+      setNotifications(bodyElements);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
   const handleLogout = () => {
     console.log("Logout clicked!");
     sessionStorage.removeItem("user");
@@ -224,36 +251,14 @@ const OurReport: React.FC = () => {
               <AddCircleOutline />
             </IconButton>
             <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
+              <Box sx={{ width: 700, padding: "1rem" }}>
                 <AddTask onCancel={handleClose} />
               </Box>
             </Drawer>
           </div>
 
           <div className="search-bar">
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={handleNotificationClick}
-            >
-              <Tooltip title="Notifications">
-                <Badge badgeContent={notifications.length} color="error">
-                  <Notifications />
-                </Badge>
-              </Tooltip>
-            </IconButton>
-            <Drawer
-              anchor="right"
-              open={isNotificationPaneOpen}
-              onClose={handleNotificationClose}
-            >
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                <NotificationPane
-                  notifications={notifications}
-                  onClose={handleNotificationClose}
-                />
-              </Box>
-            </Drawer>
+            
 
             <IconButton color="inherit" size="large">
               <Search />
@@ -278,14 +283,16 @@ const OurReport: React.FC = () => {
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <List>
-              {drawerItems.map((item, index) => (
-                <ListItem button key={index} component={Link} to={item.route}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ width: 300, padding: "1rem" }}>
+              <List>
+                {drawerItems.map((item, index) => (
+                  <ListItem button key={index} component={Link} to={item.route}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Drawer>
         </Grid>
       </Grid>

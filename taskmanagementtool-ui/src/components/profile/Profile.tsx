@@ -43,10 +43,11 @@ import "./Profile.css";
 
 // Import the background image
 import backgroundImage from "../images/background.jpg";
+import { Card, Container } from "react-bootstrap";
 
 interface Role {
-  id: number;
   name: string;
+  permissions: string;
 }
 
 interface UserProfile {
@@ -59,12 +60,13 @@ interface UserProfile {
   email: string;
   firstname: string;
   lastname: string;
-  role: string | null;
+  role: Role | null;
 }
 
 const Profile: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const [profileData, setProfileData] = useState<UserProfile>();
+  const [roleData, setRoleData] = useState<Role>();
   const navigate = useNavigate();
 
   const user = sessionStorage.getItem("user");
@@ -77,6 +79,7 @@ const Profile: React.FC = () => {
         );
         const data = await response.json();
         setProfileData(data);
+      setRoleData(data.role);  
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
@@ -138,7 +141,7 @@ const Profile: React.FC = () => {
   const fetchNotifications = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/home/dashboard/notifications`,
+        `http://localhost:8080/api/v1/home/notifications`,
         {
           mode: "cors",
           headers: {
@@ -148,9 +151,9 @@ const Profile: React.FC = () => {
         }
       );
       const data = await response.json();
-      const bodyElements = data.notifications.map((d: any) => d.body);
-      console.log(bodyElements);
-      setNotifications(bodyElements);
+      const bodyElements = data.map((d: any) => d.body);
+      console.log(data);
+      setNotifications(data);
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -198,29 +201,7 @@ const Profile: React.FC = () => {
           </div>
 
           <div className="search-bar">
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={handleNotificationClick}
-            >
-              <Tooltip title="Notifications">
-                <Badge badgeContent={3} color="error">
-                  <Notifications />
-                </Badge>
-              </Tooltip>
-            </IconButton>
-            <Drawer
-              anchor="right"
-              open={isNotificationPaneOpen}
-              onClose={handleNotificationClose}
-            >
-              <Box sx={{ width: 400, padding: "1rem" }}>
-                <NotificationPane
-                  notifications={notifications}
-                  onClose={handleNotificationClose}
-                />
-              </Box>
-            </Drawer>
+            
 
             <IconButton color="inherit" size="large">
               <Search />
@@ -256,64 +237,96 @@ const Profile: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Box
-  display="flex"
-  flexDirection="column"
-  height="100%"
-  className="form-container"
->
-  <Typography variant="h4" component="div" fontWeight="bold" gutterBottom sx={{padding: '100px' }}>
-    Profile
-  </Typography>
+      
 
-  <Box flexGrow={1} display="flex" flexDirection="column">
-    <form onSubmit={handleSubmit}>
-      <div className="row">
-        <div className="form-input col-md-6">
-          <InputLabel id="username-label">Username</InputLabel>
-          <TextField
-            value={profileData?.username || ""}
-            fullWidth
-            InputProps={
-              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-            }
-          />
-        </div>
+  <Container className="form-container">
+        <Card>
+          <Box p={2}>
+            <Typography variant="h4" component="div" fontWeight="bold" gutterBottom>
+              Profile
+            </Typography>
 
-        <div className="form-input col-md-6">
-          <InputLabel id="email-label">Email</InputLabel>
-          <TextField value={profileData?.email || ""} fullWidth />
-        </div>
-      </div>
+            <Box flexGrow={1} display="flex" flexDirection="column">
+              <form onSubmit={handleSubmit}>
+                <div className="row">
+                  <div className="form-input col-md-6">
+                    <InputLabel id="username-label">Username</InputLabel>
+                    <TextField
+                      value={profileData?.username || ""}
+                      fullWidth
+                      InputProps={{ readOnly: true }}
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
 
-      <div className="row">
-        <div className="form-input col-md-6">
-          <InputLabel id="firstname-label">First Name</InputLabel>
-          <TextField
-            value={profileData?.firstname || ""}
-            fullWidth
-            InputProps={
-              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-            }
-          />
-        </div>
+                  <div className="form-input col-md-6">
+                    <InputLabel id="email-label">Email</InputLabel>
+                    <TextField
+                      value={profileData?.email || ""}
+                      fullWidth
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
+                </div>
 
-        <div className="form-input col-md-6">
-          <InputLabel id="lastname-label">Last Name</InputLabel>
-          <TextField
-            value={profileData?.lastname || ""}
-            fullWidth
-            InputProps={
-              { readOnly: true } as Partial<TextFieldProps["InputProps"]>
-            }
-          />
-        </div>
-      </div>
+                <div className="row">
+                  <div className="form-input col-md-6">
+                    <InputLabel id="firstname-label">First Name</InputLabel>
+                    <TextField
+                      value={profileData?.firstname || ""}
+                      fullWidth
+                      InputProps={{ readOnly: true }}
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
 
-      <Button type="submit">Back</Button>
-    </form>
-  </Box>
-</Box>
+                  <div className="form-input col-md-6">
+                    <InputLabel id="lastname-label">Last Name</InputLabel>
+                    <TextField
+                      value={profileData?.lastname || ""}
+                      fullWidth
+                      InputProps={{ readOnly: true }}
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="form-input col-md-6">
+                    <InputLabel id="role-label">Role</InputLabel>
+                    <TextField
+                      value={roleData?.name || ""}
+                      fullWidth
+                      InputProps={{ readOnly: true }}
+                      style={{ borderColor: 'black' }}
+                    />
+                  </div>
+
+                  <div className="form-input col-md-6">
+  <InputLabel id="permissions-label">Permissions</InputLabel>
+  <TextField
+    value={roleData?.permissions || ""}
+    fullWidth
+    InputProps={{ readOnly: true }}
+    style={{ borderColor: 'black' , maxHeight: '70px', overflow: 'auto', backgroundColor: '#f5f5f5' }}
+    multiline
+    rows={roleData?.permissions?.length || 1}
+    variant="outlined"
+    
+    
+    InputLabelProps={{ shrink: true }}
+  />
+</div>
+                </div>
+
+                <Button sx={{
+      backgroundColor: "grey",
+      color: "#fff",
+    }} type="submit">Back</Button>
+              </form>
+            </Box>
+          </Box>
+        </Card>
+      </Container>
 
     </div>
   );

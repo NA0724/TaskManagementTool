@@ -398,7 +398,7 @@ const Task: React.FC = () => {
           <Paper
             elevation={3}
             style={{
-              padding: "1rem",
+              padding: "2rem",
               marginBottom: "1rem",
               width: "60%",
               display: "flex",

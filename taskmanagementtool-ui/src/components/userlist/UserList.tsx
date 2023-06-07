@@ -81,6 +81,7 @@ const UserList: React.FC = () => {
   const drawerItems = [
     { text: "Profile", icon: <AccountCircle />, route: "/profile" },
     { text: "Dashboard", icon: <DashboardIcon />, route: "/dashboard" },
+    { text: "Report", icon: <Assessment />, route: "/report" },
     { text: "All Users", icon: <Group />, route: "/userList" },
     { text: "All Tasks", icon: <Inventory2 />, route: "/taskList" },
   ];
@@ -155,7 +156,9 @@ const UserList: React.FC = () => {
       });
       const data = await response.json();
       const rolesList = data.map((role: any) => role.name);
+      const permissionsList = data.map((role: any) => role.permissions);
       setRoles(rolesList);
+      setPermissions(permissionsList);
     } catch (error) {
       console.error("Error fetching roles:", error);
     }
@@ -164,7 +167,7 @@ const UserList: React.FC = () => {
   const fetchPermissions = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/roles/permissions",
+        "http://localhost:8080/api/v1/roles/${rid}/permissions",
         {
           mode: "cors",
           headers: {
@@ -176,7 +179,7 @@ const UserList: React.FC = () => {
       //const data = await response.json();
       //const permissionsList = data.map((permission: any) => permission.name);
       const permissionsList = ["Read", "Write", "All"];
-      setPermissions(permissionsList);
+      //setPermissions(permissionsList);
     } catch (error) {
       console.error("Error fetching permissions:", error);
     }
@@ -193,7 +196,7 @@ const UserList: React.FC = () => {
       )
     );
   };
-
+  
   const handlePermissionChange = (
     event: SelectChangeEvent<string>,
     userName: string
@@ -262,36 +265,14 @@ const UserList: React.FC = () => {
               <AddCircleOutline />
             </IconButton>
             <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                {/* <AddTask onSubmit={handleSubmit} onCancel={handleClose} /> */}
+              <Box sx={{ width: 700, padding: "1rem" }}>
+                {<AddTask onCancel={handleClose} /> }
               </Box>
             </Drawer>
           </div>
 
           <div className="search-bar">
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={handleNotificationClick}
-            >
-              <Tooltip title="Notifications">
-                <Badge badgeContent={3} color="error">
-                  <Notifications />
-                </Badge>
-              </Tooltip>
-            </IconButton>
-            <Drawer
-              anchor="right"
-              open={isNotificationPaneOpen}
-              onClose={handleNotificationClose}
-            >
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                <NotificationPane
-                  notifications={notifications}
-                  onClose={handleNotificationClose}
-                />
-              </Box>
-            </Drawer>
+            
 
             <IconButton color="inherit" size="large">
               <Search />
@@ -316,14 +297,16 @@ const UserList: React.FC = () => {
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <List>
-              {drawerItems.map((item, index) => (
-                <ListItem button key={index} component={Link} to={item.route}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ width: 300, padding: "1rem" }}>
+              <List>
+                {drawerItems.map((item, index) => (
+                  <ListItem button key={index} component={Link} to={item.route}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Drawer>
         </Grid>
       </Grid>
@@ -351,7 +334,6 @@ const UserList: React.FC = () => {
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>FIRST NAME</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>LAST NAME</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>ROLE</TableCell>
-                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>PERMISSION</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>UPDATE</TableCell>
                 </TableRow>
               </TableHead>
@@ -377,21 +359,7 @@ const UserList: React.FC = () => {
                         ))}
                       </Select>
                     </TableCell>
-                    <TableCell>
-                      <Select
-                        value={user.permission || ""}
-                        onChange={(event) =>
-                          handlePermissionChange(event, user.username)
-                        }
-                        sx={{ width: "100%" }}
-                      >
-                        {permissions.map((permission) => (
-                          <MenuItem key={permission} value={permission}>
-                            {permission}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
+                    
                     <TableCell sx={{ textAlign: "center" }}>
                       <IconButton onClick={() => handleSaveUser(user.username)}>
                         <Save color="primary" />

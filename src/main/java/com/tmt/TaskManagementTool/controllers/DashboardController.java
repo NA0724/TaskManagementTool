@@ -112,8 +112,8 @@ public class DashboardController {
      */
     @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getAllNotificationForUser(HttpSession session) {
-        String username = session.getAttribute("user").toString();
-        return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId(username),
+        //String username = session.getAttribute("user").toString();
+        return new ResponseEntity<List<Notification>>(notificationService.getAllNotificationsByUserId("nraj"),
                 HttpStatus.OK);
     }
 

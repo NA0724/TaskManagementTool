@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.models.User;
+import com.tmt.TaskManagementTool.repositories.RoleRepository;
 import com.tmt.TaskManagementTool.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private RoleService roleService;
 
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -45,11 +46,19 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        if (user.getRole() != null) {
+            Role role = user.getRole();
+            boolean isExists = roleService.getRoleByRid(role.getRid()) != null &&
+                                    roleService.getRoleByName(role.getName())!=null;
+            if(!isExists){
+                roleService.createRole(role);
+            }
+        }
         return userRepository.insert(user);
     }
 
-    public void updateUser(User user) {
-        userRepository.save(user);
+    public User updateUser(User user) {
+       return userRepository.save(user);
     }
 
     public void deleteUser(String username) {
