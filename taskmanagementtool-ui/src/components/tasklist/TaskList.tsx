@@ -257,13 +257,13 @@ const TaskList = () => {
           <Grid item xs={12}>
           <Typography
             variant="h4"
-            sx={{ marginBottom: "20px", color: "darkgray" , padding: "1rem" }}
+            sx={{ marginBottom: "20px", color: "darkgray" , padding: "2rem"}}
           >
             Task List
           </Typography>
         </Grid>
 
-            <div style={{ padding: "1rem" }}>
+            <div style={{ paddingLeft: "5rem" , paddingRight: "5rem", paddingBottom:"1rem" }}>
               <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <InputLabel id="priority-label">Status</InputLabel>
@@ -271,6 +271,7 @@ const TaskList = () => {
                     <Select
                       labelId="status-filter-label"
                       value={statusFilter}
+                      sx={{ width: "100%"}}
                       onChange={(e) =>
                         setStatusFilter(e.target.value as string)
                       }
@@ -319,7 +320,7 @@ const TaskList = () => {
               </Grid>
             </div>
 
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{ paddingLeft: "5rem" , paddingRight: "5rem", paddingBottom:"1rem"}}>
   <Table>
     <TableHead>
       <TableRow>

@@ -123,12 +123,13 @@ const Register: React.FC = () => {
   const createUser = async (userData: FormState) => {
     try {
       const response = await fetch(
-        "http://localhost:8080//api/v1/registerUser",
+        "http://localhost:8080/api/v1/registerUser",
         {
           method: "POST",
           mode: "cors",
           headers: {
             "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify(userData),
         }
@@ -194,17 +195,25 @@ return (
 </Card>
         <Form className="form" onSubmit={handleSubmit}>
           {/* Add form fields here */}
-          <Form.Group controlId="formFirstName">
-            <Form.Label className="label-black">First Name</Form.Label>
-            <Form.Control type="text" placeholder="Enter your first name" 
-            className={`border-black ${
-              formState.submitted && formState.firstname.trim() === "" ? "is-invalid" : ""
-            }`}
-            onChange={handleInputChange} />
+          <Form.Group controlId="firstname">
+            <Form.Label className="label-black">Firstname</Form.Label>
+            <Form.Control
+              type="text"
+              name="firstname"
+              placeholder="Enter firstname"
+              value={formState.firstname}
+              onChange={handleInputChange}
+              className={`border-black ${
+                formState.submitted && formState.firstname.trim() === ""
+                  ? "is-invalid"
+                  : ""
+              }`}
+            />
             {formState.submitted && formState.firstname.trim() === "" && (
               <Form.Control.Feedback type="invalid">
                 Please enter a firstname.
-              </Form.Control.Feedback>)}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="lastname">
             <Form.Label className="label-black">Lastname</Form.Label>

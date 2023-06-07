@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ColumnGraph from "./ColumnGraph";
 import PieChart from "./PieChart";
-import generatePDF from "./generatePDF";
+import { savePDF } from "@progress/kendo-react-pdf";
+// import generatePDF from "./generatePDF";
 import {
   Typography,
   Grid,
@@ -38,14 +39,17 @@ import {
   AccountCircle,
   Logout,
   Inventory2,
+  Download as DownloadIcon,
   Close,
   Menu as MenuIcon,
+  CenterFocusStrong,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import TaskCard from "../taskcard/TaskCard";
 import AddTask from "../addtask/AddTask";
 import NotificationPane from "../notification/NotificationPane";
 import "./OurReport.css";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 interface Task {
   id: {
@@ -90,6 +94,8 @@ const OurReport: React.FC = () => {
   var newTasksCount = 0;
   var inProgressTasksCount = 0;
   var completedTasksCount = 0;
+  // const reportRef = useRef<HTMLElement | null>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const drawerItems = [
     { text: "Profile", icon: <AccountCircle />, route: "/profile" },
@@ -98,6 +104,18 @@ const OurReport: React.FC = () => {
     { text: "All Users", icon: <Group />, route: "/userList" },
     { text: "All Tasks", icon: <Inventory2 />, route: "/taskList" },
   ];
+
+  const handleDownloadPDF = async () => {
+    try {
+      const dataUri = await savePDF(reportRef.current!);
+      const link = document.createElement("a");
+      // link.href = dataUri || "";
+      link.download = "report.pdf";
+      link.click();
+    } catch (error) {
+      console.error("Error generating or downloading PDF:", error);
+    }
+  };
 
   const handleAddButtonClick = () => {
     console.log("Button clicked!");
@@ -115,33 +133,6 @@ const OurReport: React.FC = () => {
 
   const handleNotificationClose = () => {
     setNotificationPaneOpen(false);
-  };
-
-
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/home/notifications`,
-        {
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-        }
-      );
-      const data = await response.json();
-      const bodyElements = data.map((d: any) => d.body);
-      console.log(bodyElements);
-      setNotifications(bodyElements);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
   };
 
   const handleLogout = () => {
@@ -164,25 +155,27 @@ const OurReport: React.FC = () => {
 
       setIsDrawerOpen(open);
     };
-  const handleDownloadPDF = async () => {
-    try {
-      const pdfBlob = await generatePDF();
-      const url = URL.createObjectURL(pdfBlob);
+  // const handleDownloadPDF = async () => {
+  //   try {
+  //     const pdfBlob = await generatePDF();
+  //     const url = URL.createObjectURL(pdfBlob);
 
-      // Create a temporary <a> element to initiate the download
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "report.pdf";
+  //     // Create a temporary <a> element to initiate the download
+  //     //tasks.toString
+  //     console.log("task are:", JSON.stringify(tasks));
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.download = "report.pdf";
 
-      // Trigger the download
-      link.click();
+  //     // Trigger the download
+  //     link.click();
 
-      // Clean up by revoking the object URL
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error generating or downloading PDF:", error);
-    }
-  };
+  //     // Clean up by revoking the object URL
+  //     URL.revokeObjectURL(url);
+  //   } catch (error) {
+  //     console.error("Error generating or downloading PDF:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -298,7 +291,7 @@ const OurReport: React.FC = () => {
       </Grid>
       <br></br>
 
-      <div className="task-list-container">
+      <div className="task-list-container" ref={reportRef} >
         <table className="task-list-table">
           <tr>
             <th>ID</th>
@@ -321,25 +314,39 @@ const OurReport: React.FC = () => {
             ))}
           </tbody>
         </table>
+        <br></br>
+        <div style={{ width: "100%", alignContent: "center" }}>
+          <PieChart
+            data={[
+              { label: "New Tasks", value: newTasksCount },
+              { label: "InProgress Tasks", value: inProgressTasksCount },
+              { label: "Completed Tasks", value: completedTasksCount },
+              // Add more data points as needed
+            ]}
+            colors={["#B053BF", "#FF9800", "#4CAF50"]}
+            labelColors={{
+              New: "#C6D8E6",
+              InProgress: "#B6CBE3",
+              Completed: "#9AB4DB",
+            }}
+          />
+        </div>
+        <br />
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1, color: "#000000" }}
+        >
+          Download as PDF
+        </Typography>
+        <IconButton
+          color="inherit"
+          onClick={handleDownloadPDF}
+          sx={{ color: "black" }}
+        >
+          <DownloadIcon />
+        </IconButton>
       </div>
-
-      <PieChart
-        data={[
-          { label: "New Tasks", value: newTasksCount },
-          { label: "InProgress Tasks", value: inProgressTasksCount },
-          { label: "Completed Tasks", value: completedTasksCount },
-          // Add more data points as needed
-        ]}
-        colors={["#C6D8E6", "#B6CBE3", "#9AB4DB"]}
-        labelColors={{
-          New: "#C6D8E6",
-          InProgress: "#B6CBE3",
-          Completed: "#9AB4DB",
-        }}
-      />
-
-      <br />
-      <button onClick={handleDownloadPDF}>Download Report PDF</button>
     </div>
   );
 };

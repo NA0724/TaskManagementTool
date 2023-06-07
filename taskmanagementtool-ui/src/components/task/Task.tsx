@@ -62,7 +62,8 @@ interface Task {
   taskType: string;
   taskCategory: string;
   comments: string[];
-  attachments: null | File[];
+  attachments: string[];
+  filename: string;
 }
 
 interface User {
@@ -91,9 +92,7 @@ interface CommentsProps {
 }
 
 interface Attachment {
-  id: string;
   filename: string;
-  size: number;
 }
 
 const Task: React.FC = () => {
@@ -102,6 +101,7 @@ const Task: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [title, setTitle] = useState("");
+  const [filename, setFilename] = useState("");
   const [createdBy, setCreatedBy] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("");
@@ -128,25 +128,10 @@ const Task: React.FC = () => {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      setSelectedFile(event.target.files[0]);
-    }
-  };
+  
   const navigate = useNavigate();
 
-  const handleAddAttachment = () => {
-    if (selectedFile) {
-      const newAttachment: Attachment = {
-        id: String(Date.now()),
-        filename: selectedFile.name,
-        size: selectedFile.size,
-      };
-
-      setAttachments((prevAttachments) => [...prevAttachments, newAttachment]);
-      setSelectedFile(null);
-    }
-  };
+  
 
   useEffect(() => {
     fetchTask();
@@ -189,6 +174,12 @@ const Task: React.FC = () => {
       setCreatedAt(data.createdAt);
       // const bodyElements = data.notifications.map((d: any) => d.body);
       // console.log(bodyElements);
+     
+        const at = data.attachments;
+setFilename(at.filename);
+       
+      
+      //setAttachments(data.attachments);
       setComments(data.comments);
     } catch (error) {
       console.error("Error fetching task:", error);
@@ -207,18 +198,18 @@ const Task: React.FC = () => {
     console.log("Submit of edit Task");
     const formData = {
       tid,
-      title,
-      description,
-      priority,
-      dueDate,
-      taskType,
-      taskCategory,
+          title,
+          description,
+          priority,
+          dueDate,
+          taskType,
+          taskCategory,
       attachments,
       comments,
       status,
-      assignedTo,
+          assignedTo,
     };
-
+  
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/tasks/edit-task/${taskId}`,
@@ -226,24 +217,25 @@ const Task: React.FC = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify(formData),
         }
       );
-
-      if (response.ok) {
-        // Task updated successfully
+  
+        if (response.ok) {
+          // Task updated successfully
         console.log("Task updated");
-      } else {
+        } else {
         // Handle error response
         console.log("Error updating task");
-      }
-    } catch (error) {
+        }
+      } catch (error) {
       // Handle fetch error
       console.error("Error updating task", error);
-    }
-  };
-
+      }
+    };
+  
   const handleCommentSubmit = async () => {
     console.log("Comment Submit of edit Task");
     if (newComment.trim() !== "") {
@@ -252,15 +244,15 @@ const Task: React.FC = () => {
         createdAt: new Date().toLocaleString(),
         createdBy: "bprak",
         commentId: null,
-      };
-
+    };
+  
       setComments([newCommentObject, ...comments]);
       setNewComment("");
-    }
+  }
   };
 
   const [notifications, setNotifications] = useState<string[]>([]);
-
+  
   const handleAddButtonClick = () => {
     // Handle the button click event here
     console.log("Button clicked!");
@@ -334,29 +326,7 @@ const Task: React.FC = () => {
           </div>
 
           <div className="search-bar">
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={handleNotificationClick}
-            >
-              <Tooltip title="Notifications">
-                <Badge badgeContent={notifications.length} color="error">
-                  <Notifications />
-                </Badge>
-              </Tooltip>
-            </IconButton>
-            <Drawer
-              anchor="right"
-              open={isNotificationPaneOpen}
-              onClose={handleNotificationClose}
-            >
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                <NotificationPane
-                  notifications={notifications}
-                  onClose={handleNotificationClose}
-                />
-              </Box>
-            </Drawer>
+           
 
             <IconButton color="inherit" size="large">
               <Search />
@@ -400,7 +370,8 @@ const Task: React.FC = () => {
             style={{
               padding: "2rem",
               marginBottom: "1rem",
-              width: "60%",
+              width: "50%",
+            
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -574,33 +545,23 @@ const Task: React.FC = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <InputLabel shrink>Attachments</InputLabel>
-                <List dense sx={{ fontSize: "12px" }}>
-                {attachments.map((attachment) => (
-              <Chip
-                key={attachment.id}
-                avatar={<Avatar>{attachment.filename[0]}</Avatar>}
-                label={attachment.filename}
-                
-                sx={{ marginRight: "0.5rem", marginBottom: "0.5rem" }}
-              />
-            ))}
-                </List>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  style={{ fontSize: "12px" }}
-                />
-
-                {/* Add Attachment button */}
-                <Button
-                  onClick={handleAddAttachment}
-                  //disabled={!selectedFile}
-                  variant="outlined"
-                  color="primary"
-                >
-                  Add Attachment
-                </Button>
-              </Grid>
+                  {attachments.map((attachment, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      border: "1px solid #ccc",
+                      p: 2,
+                      mb: 2,
+                      textAlign: "left",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <Typography variant="body1" gutterBottom>
+                      File Name: {attachment.filename}
+                    </Typography>
+                  </Box>
+                ))}
+</Grid>
             </Grid>
           </Paper>
           <Box>

@@ -27,8 +27,10 @@ align-items: center;
 
 .task-list-container {
   background-color: #f0f8ff;
-  padding: 20px;
+  padding: 50px;
   font-size: 18px;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .task-list-table {

@@ -116,8 +116,8 @@ public class TaskController {
      * @param requestBody
      * @return
      */
-    @PutMapping("/edit-task/{tid}")
-    public ResponseEntity<Task> updateTask(@PathVariable String tid, @RequestPart("task") String requestBody, @RequestParam("file") MultipartFile file){
+    @PutMapping("/edit-task/{taskId}")
+    public ResponseEntity<Task> editTask(@PathVariable("taskId") String tid, String requestBody){
         Task task = taskService.getTaskByTid(tid);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -142,8 +142,45 @@ public class TaskController {
                 }
                 task.setComments(comments);
             }
-            JsonNode attachmentsNode = jsonNode.get("attachments");
-            if (file != null && attachmentsNode.isArray()) {
+            
+            taskService.updateTask(task);
+            return new ResponseEntity<Task>(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error updating task", e);
+            return new ResponseEntity<Task>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
+
+    public ResponseEntity<Task> updateTask(@PathVariable("taskId") String tid, @RequestPart("task") String requestBody, @RequestParam("file") MultipartFile file){
+        Task task = taskService.getTaskByTid(tid);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+			JsonNode jsonNode = objectMapper.readTree(requestBody);
+            task.setTitle(jsonNode.get("title").asText());
+            task.setDescription(jsonNode.get("description").asText());
+            task.setPriority(jsonNode.get("priority").asText());
+            task.setStatus("NEW");
+            task.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
+            task.setTaskType(jsonNode.get("taskType").asText());
+            task.setTaskCategory(jsonNode.get("taskCategory").asText());
+            task.setAssignedTo(jsonNode.get("assignedTo").asText());
+            JsonNode commentsNode = jsonNode.get("comments");
+            if (commentsNode != null && commentsNode.isArray()) {
+                List<Comment> comments = task.getComments();
+                for (JsonNode commentNode : commentsNode) {
+                    Comment comment = new Comment();
+                    comment.setTaskId(tid);
+                    comment.setBody(commentNode.get("body").asText());
+                    comment.setCreatedBy(commentNode.get("createdBy").asText());
+                    comments.add(comment);
+                }
+                task.setComments(comments);
+            }
+            if (file != null) {
                 List<Attachment> attachments = task.getAttachments();
                 //attach only one file at a time
                     Attachment attachment = new Attachment();

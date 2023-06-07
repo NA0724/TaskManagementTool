@@ -196,7 +196,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
+    <div className="dashboard-container" style={{ backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
       
       <AppBar position="static" className="app-bar">
         <Toolbar>
@@ -294,7 +294,7 @@ const Dashboard: React.FC = () => {
       {/* Top Row */}
       <Grid item xs={3}>
         <Box display="flex" alignItems="center" mb={2} paddingTop={'50px'}>
-          <Typography variant="h3" component="span" fontWeight="bold">
+          <Typography variant="h3" component="span" fontWeight="bold" color="black">
             My Tasks
           </Typography>
         </Box>
@@ -304,7 +304,7 @@ const Dashboard: React.FC = () => {
       </Backdrop>
       {/* Tasks Grid - Takes 70% of the width */}
 
-      <Grid container spacing={10} paddingLeft={'80px'} paddingRight={'80px'}>
+      <Grid container spacing={10} paddingLeft={'9rem'} paddingRight={'80px'}>
         <Grid item xs={10}>
           <Grid container spacing={3}>
             {tasks.map((task) => (
@@ -316,7 +316,7 @@ const Dashboard: React.FC = () => {
                   assignedTo={task.assignedTo}
                   status={task.status}
                   dueDate={task.dueDate}
-                  taskCategory={task.taskCategory}
+                  createdBy={task.createdBy}
                 />
               </Grid>
             ))}
@@ -351,7 +351,7 @@ const Dashboard: React.FC = () => {
                       assignedTo={task.assignedTo}
                       status={task.status}
                       dueDate={task.dueDate}
-                      taskCategory={task.taskCategory}
+                      createdBy={task.createdBy}
                     />
                   </Grid>
                 ))}

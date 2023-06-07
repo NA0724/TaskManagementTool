@@ -7,12 +7,12 @@ interface TaskCardProps {
   tid: string;
   title: string;
   description?: string;
-  status?: string;
-  priority?: string;
-  dueDate?: string;
-  createdBy?: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+  createdBy: string;
   createdAt?: string;
-  assignedTo?: string;
+  assignedTo: string;
   assignedBy?: string;
   assignedDate?: string;
   assignedTime?: string;
@@ -71,7 +71,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
         >
           {status}
         </Box>
-        
+        <Box
+  sx={{
+    backgroundColor: priority === "High" ? "#F44336" : priority === "Medium" ? "#CEBD25" : "#2196F3",
+    color: "#fff",
+    padding: "0.25rem",
+    borderRadius: "4px",
+    marginLeft: "0.5rem",
+    fontSize: "0.875rem",
+    
+  }}
+>
+  {priority}
+</Box>
       </Box>
  
       <Box
@@ -81,21 +93,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
           marginBottom: "0.5rem",
         }}
       >
-        <Typography variant="body1" component="div">
+        <Typography variant="body1" component="div" sx={{textAlign: "left"}}>
           {title}
         </Typography>
-        <Box
-  sx={{
-    backgroundColor: priority === "High" ? "#F44336" : priority === "Medium" ? "#CEBD25" : "#2196F3",
-    color: "#fff",
-    padding: "0.25rem",
-    borderRadius: "4px",
-    marginLeft: "auto",
-    fontSize: "0.875rem",
-  }}
->
-  {priority}
-</Box>
+        
       </Box>
       <Box
         sx={{
@@ -119,7 +120,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         }}
       >
         <Typography variant="body2" component="div">
-        <span style={{ fontWeight: "bold" }}>Owner:</span> {assignedTo}
+        <span style={{ fontWeight: "bold" }}>Created By:</span> {createdBy}
         </Typography>
       </Box>
       <Box

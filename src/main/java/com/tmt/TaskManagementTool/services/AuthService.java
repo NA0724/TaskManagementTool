@@ -59,7 +59,7 @@ public class AuthService {
     }
 
     public User getCurrentUser(HttpSession session) {
-        try {
+        /*try {
             if (session != null) {
                 // if (session.getAttribute("user") != null) {
                 // String userName = session.getAttribute("user").toString();
@@ -69,7 +69,7 @@ public class AuthService {
             }
         } catch (Exception e) {
             log.error("Error getting current user", e);
-        }
+        }*/
         return null;
     }
 

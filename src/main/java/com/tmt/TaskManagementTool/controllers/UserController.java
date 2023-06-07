@@ -215,26 +215,19 @@ if(jsonNode.get("username").asText()!=null){
         try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Role role = new Role();
-            String rid = jsonNode.get("rid").asText();
-            if (roleService.getRoleByRid(rid) != null) {
-                role = roleService.getRoleByRid(rid);
-            } else {
-                role.setRid(rid);
-                role.setName(jsonNode.get("name").asText());
-                ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
-                
-                    List<String> permissions = new ArrayList<>();
-                    for (JsonNode per : permissionNode) {
-                        permissions.add(per.asText());
-                    }
-                    role.setPermissions(permissions);
-                
-                roleService.createRole(role);
+            String roleName = jsonNode.get("role").asText();
+            role = roleService.getRoleByName(roleName);
+            ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
+            List<String> permissions = new ArrayList<>();
+            for (JsonNode per : permissionNode) {
+                permissions.add(per.asText());
             }
+            role.setPermissions(permissions);
+            roleService.updateRole(role);
             user.setRole(role);
-            
-            return new ResponseEntity<User>(userService.updateUser(user),HttpStatus.OK);
-        } catch (Exception e) {
+
+            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
+        }catch (Exception e) {
             log.error("Cannot assign role to user", e);
             return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

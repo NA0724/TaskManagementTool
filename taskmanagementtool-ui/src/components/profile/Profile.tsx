@@ -167,7 +167,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, 
+    <div className="dashboard-container" style={{  
     backgroundSize: 'cover', minHeight: '100vh', position: 'relative'}}>
       
       <AppBar position="static" className="app-bar">

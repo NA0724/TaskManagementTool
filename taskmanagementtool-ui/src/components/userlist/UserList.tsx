@@ -56,13 +56,20 @@ interface User {
   role: string | null;
   permission: string | null;
 }
+interface Role {
+  rid: string;
+  name: string;
+}
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<string[]>([]);
   const user = sessionStorage.getItem("user");
-
+  const [rid, setRid] = useState<String>();
+  const [ridRoles, setRIDRoles] = useState<Role[]>([]);
+  const [selectedRid, setSelectedRid] = useState("");
+  const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -126,7 +133,6 @@ const UserList: React.FC = () => {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
-    fetchPermissions();
   }, []);
 
   const fetchUsers = async () => {
@@ -145,7 +151,7 @@ const UserList: React.FC = () => {
     }
   };
 
-  const fetchRoles = async () => {
+  /*const fetchRoles = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/v1/roles", {
         mode: "cors",
@@ -182,6 +188,57 @@ const UserList: React.FC = () => {
       //setPermissions(permissionsList);
     } catch (error) {
       console.error("Error fetching permissions:", error);
+    }
+  };*/
+
+  const roleMap: { [name: string]: string } = {};
+
+  const populateRoleMap = (data: any[]) => {
+    data.forEach((role: any) => {
+      roleMap[role.name] = role.rid;
+    });
+  };
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/roles", {
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+      const data = await response.json();
+      const rolesList = data.map((role: any) => role.name);
+      const ridNameArray = data.map((item: any) => ({
+        rid: item.rid,
+        name: item.name,
+      }));
+      setRIDRoles(ridNameArray);
+
+      populateRoleMap(data);
+      console.log(roleMap);
+      setRoles(rolesList);
+      const uniquePermissions: string[] = [];
+
+      data.forEach((obj: any) => {
+        // Step 3: Access the 'permissions' property of each object
+        const permissions = obj.permissions;
+
+        // Step 4: Iterate over the 'permissions' array
+        permissions.forEach((permission: string) => {
+          // Step 5: Check if the permission is already present in the unique permissions array
+          if (!uniquePermissions.includes(permission)) {
+            // If not present, add it to the unique permissions array
+            uniquePermissions.push(permission);
+          }
+        });
+      });
+
+      // 'uniquePermissions' now contains the list of all unique permissions
+      console.log(uniquePermissions);
+      setPermissions(uniquePermissions);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
     }
   };
 
@@ -237,7 +294,7 @@ const UserList: React.FC = () => {
 
   return (
     <div className="dashboard-container">
-      <AppBar position="static" className="app-bar">
+      <AppBar className="app-bar">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -314,7 +371,7 @@ const UserList: React.FC = () => {
       <Grid
         container
         spacing={2}
-        sx={{ backgroundColor: "#f5f5f5", padding: "20px" }}
+        sx={{ backgroundColor: "#f5f5f5", padding: "100px",   paddingLeft:"80px", paddingRight:"80px"}}
       >
         <Grid item xs={12}>
           <Typography
@@ -324,7 +381,7 @@ const UserList: React.FC = () => {
             User List
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} >
           <TableContainer>
             <Table>
               <TableHead>
@@ -334,6 +391,7 @@ const UserList: React.FC = () => {
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>FIRST NAME</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>LAST NAME</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>ROLE</TableCell>
+                  <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>PERMISSIONS</TableCell>
                   <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>UPDATE</TableCell>
                 </TableRow>
               </TableHead>
@@ -359,6 +417,23 @@ const UserList: React.FC = () => {
                         ))}
                       </Select>
                     </TableCell>
+                    
+                    <TableCell>
+                      <Select
+                        value={user.permission || ""}
+                        onChange={(event) =>
+                          handlePermissionChange(event, user.username)
+                        }
+                        sx={{ width: "100%" }}
+                      >
+                        {permissions.map((permission) => (
+                          <MenuItem key={permission} value={permission}>
+                            {permission}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
+                    
                     
                     <TableCell sx={{ textAlign: "center" }}>
                       <IconButton onClick={() => handleSaveUser(user.username)}>
