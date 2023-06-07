@@ -12,6 +12,8 @@ import Profile from "./components/profile/Profile";
 import TaskDetails from "./components/taskdetails/TaskDetails";
 import UserList from "./components/userlist/UserList";
 import TaskList from "./components/tasklist/TaskList";
+import OurReport from "./components/report/OurReport";
+import { Report } from "@mui/icons-material";
 
 const App: React.FC = () => {
   const chartData = {
@@ -36,6 +38,7 @@ const App: React.FC = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/task" element={<Task />} />
             <Route path="/task/:taskId" element={<Task />} />
+            <Route path="/report" element={<OurReport />} />
             <Route path="/profile/" element={<Profile />} />
             <Route path="/userList/" element={<UserList />} />
             <Route path="/taskList/" element={<TaskList />} />

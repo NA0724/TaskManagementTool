@@ -129,7 +129,32 @@ const Profile: React.FC = () => {
     setNotificationPaneOpen(false);
   };
 
-  const notifications = ["Notification 1", "Notification 2", "Notification 3"];
+  const [notifications, setNotifications] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/home/dashboard/notifications`,
+        {
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      );
+      const data = await response.json();
+      const bodyElements = data.notifications.map((d: any) => d.body);
+      console.log(bodyElements);
+      setNotifications(bodyElements);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
 
   const handleSubmit = () => {
     console.log("Submit Clicked");
@@ -139,7 +164,8 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
+    <div className="dashboard-container" style={{ backgroundImage: `url(${backgroundImage})`, 
+    backgroundSize: 'cover', minHeight: '100vh', position: 'relative'}}>
       
       <AppBar position="static" className="app-bar">
         <Toolbar>
@@ -165,8 +191,8 @@ const Profile: React.FC = () => {
               <AddCircleOutline />
             </IconButton>
             <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                {/* <AddTask onSubmit={handleSubmit} onCancel={handleClose} /> */}
+              <Box sx={{ width: 700, padding: "1rem" }}>
+                { <AddTask onCancel={handleClose} /> }
               </Box>
             </Drawer>
           </div>
@@ -188,7 +214,7 @@ const Profile: React.FC = () => {
               open={isNotificationPaneOpen}
               onClose={handleNotificationClose}
             >
-              <Box sx={{ width: 300, padding: "1rem" }}>
+              <Box sx={{ width: 400, padding: "1rem" }}>
                 <NotificationPane
                   notifications={notifications}
                   onClose={handleNotificationClose}
@@ -209,21 +235,23 @@ const Profile: React.FC = () => {
       </AppBar>
 
       {/* SIDE MENU GRID */}
-      <Grid container spacing={2} className="content-container">
+      <Grid container spacing={3} className="content-container">
         <Grid item xs={3} className="drawer-container">
           <Drawer
             anchor="left"
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <List>
-              {drawerItems.map((item, index) => (
-                <ListItem button key={index} component={Link} to={item.route}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ width: 300, padding: "1rem" }}>
+              <List>
+                {drawerItems.map((item, index) => (
+                  <ListItem button key={index} component={Link} to={item.route}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Drawer>
         </Grid>
       </Grid>
@@ -234,7 +262,7 @@ const Profile: React.FC = () => {
   height="100%"
   className="form-container"
 >
-  <Typography variant="h6" component="div" gutterBottom>
+  <Typography variant="h4" component="div" fontWeight="bold" gutterBottom sx={{padding: '100px' }}>
     Profile
   </Typography>
 

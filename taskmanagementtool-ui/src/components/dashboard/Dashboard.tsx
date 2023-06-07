@@ -22,6 +22,8 @@ import {
   Box,
   TextField,
   Stack,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import {
   Search,
@@ -92,7 +94,7 @@ const Dashboard: React.FC = () => {
   const [newTaskCount, setnewTaskCount] = React.useState(0);
   const [inProgressTasksCount, setinProgressTasksCount] = React.useState(0);
   const [completedTasksCount, setcompletedTasksCount] = React.useState(0);
-
+  const [loading, setLoading] = useState(true);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -110,6 +112,7 @@ const Dashboard: React.FC = () => {
   const drawerItems = [
     { text: "Profile", icon: <AccountCircle />, route: "/profile" },
     { text: "Dashboard", icon: <DashboardIcon />, route: "/dashboard" },
+    { text: "Report", icon: <Assessment />, route: "/report" },
     { text: "All Users", icon: <Group />, route: "/userList" },
     { text: "All Tasks", icon: <Inventory2 />, route: "/taskList" },
   ];
@@ -185,8 +188,10 @@ const Dashboard: React.FC = () => {
       const bodyElements = data.notifications.map((d: any) => d.body);
       console.log(bodyElements);
       setNotifications(bodyElements);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching notifications:", error);
+      setLoading(false);
     }
   };
 
@@ -217,7 +222,7 @@ const Dashboard: React.FC = () => {
               <AddCircleOutline />
             </IconButton>
             <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
+              <Box sx={{ width: 700, padding: "1rem" }}>
                 <AddTask onCancel={handleClose} />
               </Box>
             </Drawer>
@@ -240,7 +245,7 @@ const Dashboard: React.FC = () => {
               open={isNotificationPaneOpen}
               onClose={handleNotificationClose}
             >
-              <Box sx={{ width: 300, padding: "1rem" }}>
+              <Box sx={{ width: 400, padding: "1rem" }}>
                 <NotificationPane
                   notifications={notifications}
                   onClose={handleNotificationClose}
@@ -265,34 +270,38 @@ const Dashboard: React.FC = () => {
 
      
       {/* SIDE MENU GRID */}
-      <Grid container spacing={2} className="content-container">
+      <Grid container spacing={3} className="content-container">
         <Grid item xs={3} className="drawer-container">
           <Drawer
             anchor="left"
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <List>
-              {drawerItems.map((item, index) => (
-                <ListItem button key={index} component={Link} to={item.route}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ width: 300, padding: "1rem" }}>
+              <List>
+                {drawerItems.map((item, index) => (
+                  <ListItem button key={index} component={Link} to={item.route}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Drawer>
         </Grid>
       </Grid>
 
       {/* Top Row */}
-      <Grid item xs={6}>
+      <Grid item xs={3}>
         <Box display="flex" alignItems="center" mb={2}>
-          <Typography variant="h6" component="span">
+          <Typography variant="h3" component="span" fontWeight="bold">
             My Tasks
           </Typography>
         </Box>
       </Grid>
-
+      <Backdrop open={loading} style={{ zIndex: 999 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {/* Tasks Grid - Takes 70% of the width */}
 
       <Grid container spacing={2}>

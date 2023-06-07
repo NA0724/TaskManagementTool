@@ -96,8 +96,8 @@ const Login: React.FC = () => {
 
   return (
     <Container
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{ fontSize: "14px" }}
+      className="d-flex justify-content-center align-items-center vh-100 custom-container"
+      style={{ fontSize: "14px", backgroundImage: "url('../images/background1.jpg')"}}
     >
       <div className="border p-4">
         <Form onSubmit={handleSubmit}>

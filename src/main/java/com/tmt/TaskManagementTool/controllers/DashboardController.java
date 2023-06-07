@@ -97,7 +97,7 @@ public class DashboardController {
     public void getPDFReport(HttpSession session) {
         // String username = session.getAttribute("user").toString();
         // User user = userService.getUserByUsername(username);
-        User user = authService.getCurrentUser(session);
+        //User user = authService.getCurrentUser(session);
         // @>@ // if (user.getRole().getName().equalsIgnoreCase("Manager")) {
         generatePdfReportUtil.generatePdfReport();
         // }
