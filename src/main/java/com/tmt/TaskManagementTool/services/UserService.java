@@ -46,14 +46,7 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (user.getRole() != null) {
-            Role role = user.getRole();
-            boolean isExists = roleService.getRoleByRid(role.getRid()) != null &&
-                                    roleService.getRoleByName(role.getName())!=null;
-            if(!isExists){
-                roleService.createRole(role);
-            }
-        }
+        
         return userRepository.insert(user);
     }
 

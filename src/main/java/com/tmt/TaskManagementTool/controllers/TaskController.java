@@ -117,7 +117,7 @@ public class TaskController {
      * @return
      */
     @PutMapping("/edit-task/{taskId}")
-    public ResponseEntity<Task> editTask(@PathVariable("taskId") String tid, String requestBody){
+    public ResponseEntity<Task> editTask(@PathVariable("taskId") String tid,@RequestBody String requestBody){
         Task task = taskService.getTaskByTid(tid);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -125,7 +125,7 @@ public class TaskController {
             task.setTitle(jsonNode.get("title").asText());
             task.setDescription(jsonNode.get("description").asText());
             task.setPriority(jsonNode.get("priority").asText());
-            task.setStatus("NEW");
+            task.setStatus(jsonNode.get("status").asText());
             task.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
             task.setTaskType(jsonNode.get("taskType").asText());
             task.setTaskCategory(jsonNode.get("taskCategory").asText());

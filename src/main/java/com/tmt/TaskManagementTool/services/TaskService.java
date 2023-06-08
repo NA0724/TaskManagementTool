@@ -164,7 +164,7 @@ public class TaskService {
         
         Notification notification = notificationService.createNotificationForTask(task.getTid());
 
-        if (!(oldTask.getStatus() == oldTask.getStatus())) {
+        if (!(oldTask.getStatus() == task.getStatus())) {
             notification.setBody("Task " + task.getTid() + ": Status changed to " + task.getStatus());
 
         } else if (!(oldTask.getAssignedTo().equalsIgnoreCase(task.getAssignedTo()))) {

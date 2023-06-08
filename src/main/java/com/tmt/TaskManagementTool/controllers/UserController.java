@@ -76,8 +76,7 @@ public class UserController {
             JsonNode roleNode = jsonNode.get("role");
             if (roleNode != null) {
                 Role newRole = new Role();
-                newRole.setRid(roleNode.get("rid").asText());
-                newRole.setName(roleNode.get("name").asText());
+                newRole = roleService.getRoleByName(roleNode.get("name").asText());
                 ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
                 
                     List<String> permissions = new ArrayList<>();
@@ -85,7 +84,7 @@ public class UserController {
                         permissions.add(per.asText());
                     }
                     newRole.setPermissions(permissions);
-                
+                roleService.updateRole(newRole);
                 newUser.setRole(newRole);
             }
             
@@ -125,17 +124,12 @@ public class UserController {
             }
 if(jsonNode.get("username").asText()!=null){
     user.setUsername(jsonNode.get("username").asText());
-}
-            
-            
-            
-            
-            
+} 
             JsonNode roleNode = jsonNode.get("role");
             if (roleNode != null) {
                 Role newRole = new Role();
-                newRole.setRid(roleNode.get("rid").asText());
-                newRole.setName(roleNode.get("name").asText());
+                
+                newRole = roleService.getRoleByName(roleNode.get("name").asText());
                 ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
                
                     List<String> permissions = new ArrayList<>();
@@ -207,7 +201,7 @@ if(jsonNode.get("username").asText()!=null){
     @PostMapping("/assign-role/{username}")
     public ResponseEntity<User> assignUserRole(@PathVariable String username, @RequestBody String requestBody,
             HttpSession session) {
-        User loggedUser = authService.getCurrentUser(session);
+        //User loggedUser = authService.getCurrentUser(session);
         // if (loggedUser.getRole().equals(roleService.getRoleByName("Manager"))) {
         User user = userService.getUserByUsername(username);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -215,7 +209,7 @@ if(jsonNode.get("username").asText()!=null){
         try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Role role = new Role();
-            String roleName = jsonNode.get("role").asText();
+            String roleName = jsonNode.get("name").asText();
             role = roleService.getRoleByName(roleName);
             ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
             List<String> permissions = new ArrayList<>();
