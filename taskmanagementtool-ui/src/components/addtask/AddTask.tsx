@@ -53,6 +53,7 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
   const [taskCategory, setTaskCategory] = useState("General");
   const [status, setStatus] = useState("New");
   const [attachment, setAttachment] = useState<string>("");
+  const [attachments, setAttachments] = useState<File[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   const user = sessionStorage.getItem("user");
@@ -84,33 +85,43 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
     setDueDate(event.target.value);
   };
 
-  const handleAttachmentChange = (
+  /*const handleAttachmentChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.files) {
       setAttachment(event.target.files[0].name);
     }
-  };
+  };*/
+
+  const handleAttachmentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const fileList = Array.from(event.target.files);
+      setAttachments(fileList);
+    }};
 
   const handleSubmit = async () => {
     setLoading(true);
-    var tid = `${id}`;
+    //var tid = `${id}`;
     console.log("handle Submit of Add Task");
     var comments = [{ body: comment }];
-    var attachments = [{ body: attachment }];
-    const formData = {
-      title,
-      description,
-      priority,
-      dueDate,
-      assignedTo,
-      taskType,
-      taskCategory,
-      attachments,
-      comments,
-      status,
-      tid,
-    };
+    const formData = new FormData();
+  formData.append("task", JSON.stringify({
+    createdBy: user,
+    tid: tid,
+    title: title,
+    description: description,
+    status: status,
+    priority: priority,
+    assignedTo: assignedTo,
+    dueDate: dueDate,
+    taskType: taskType,
+    taskCategory: taskCategory,
+    comments: comments,
+  }));
+
+  attachments.forEach((attachment, index) => {
+    formData.append("file", attachment);
+  });
 
     try {
       const response = await fetch(
@@ -119,10 +130,11 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
           method: "POST",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json",
+            //"Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
           },
-          body: JSON.stringify(formData),
+          //body: JSON.stringify(formData),
+          body: formData,
         }
       );
       const data = await response.json();
@@ -207,7 +219,8 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
             style={{ width: "100%" }}
             minRows={3}
           />
-          
+          <InputLabel id="priority-label">Attach a File</InputLabel>
+          <input type="file" onChange={handleAttachmentChange} multiple />
         </form>
         <br /> 
       </Box>

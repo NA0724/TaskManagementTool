@@ -121,6 +121,7 @@ const Task: React.FC = () => {
   const drawerItems = [
     { text: "Profile", icon: <AccountCircle />, route: "/profile" },
     { text: "Dashboard", icon: <DashboardIcon />, route: "/dashboard" },
+    { text: "Report", icon: <Assessment />, route: "/report" },
     { text: "All Users", icon: <Group />, route: "/userList" },
     { text: "All Tasks", icon: <Inventory2 />, route: "/taskList" },
   ];
@@ -240,7 +241,7 @@ const Task: React.FC = () => {
       const newCommentObject: Comment = {
         body: newComment,
         createdAt: new Date().toLocaleString(),
-        createdBy: "bprak",
+        createdBy: "nraj",
         commentId: null,
     };
   
@@ -317,7 +318,7 @@ const Task: React.FC = () => {
               <AddCircleOutline />
             </IconButton>
             <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
+              <Box sx={{ width: 700, padding: "1rem" }}>
                 <AddTask onCancel={handleClose} />
               </Box>
             </Drawer>
@@ -349,14 +350,16 @@ const Task: React.FC = () => {
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <List>
-              {drawerItems.map((item, index) => (
-                <ListItem button key={index} component={Link} to={item.route}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItem>
-              ))}
-            </List>
+            <Box sx={{ width: 300, padding: "1rem" }}>
+              <List>
+                {drawerItems.map((item, index) => (
+                  <ListItem button key={index} component={Link} to={item.route}>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
           </Drawer>
         </Grid>
       </Grid>

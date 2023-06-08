@@ -188,7 +188,7 @@ return (
            
             <Col md={12}>
       <div >
-      <Card bg="secondary" text="dark" className="p-4">Join us today!  Register now.
+      <Card bg="secondary" text="dark" className="p-4">Join today by registering now!
   <Card.Text>
     
   </Card.Text>

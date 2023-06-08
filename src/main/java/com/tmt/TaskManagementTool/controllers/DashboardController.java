@@ -59,7 +59,7 @@ public class DashboardController {
         log.info(user.getFirstname() + " " + user.getLastname() + " has logged in successfully");
         DasboardData dashboardData = new DasboardData();
 
-        List<Task> tasks = taskService.getAllTasksAssignedToUser(username);
+        List<Task> tasks = taskService.getAllTasks();
         // @>@ //// if (user.getRole().getName().equalsIgnoreCase("Manager")) {
         List<Task> createdTasks = taskService.getAllTasksCreatedByUser(username);
         dashboardData.setTasksCreatedBy(createdTasks);

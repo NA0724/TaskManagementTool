@@ -64,50 +64,52 @@ public class TaskController {
      * @return
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session){
-       // User loggedInUser = authService.getCurrentUser(session);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode jsonNode = objectMapper.readTree(requestBody);
-            Task newTask = new Task();
-           // newTask.setCreatedBy(loggedInUser.getUsername());
-           newTask.setCreatedBy("nraj");
-            newTask.setTid(jsonNode.get("tid").asText());
-            newTask.setTitle(jsonNode.get("title").asText());
-            newTask.setDescription(jsonNode.get("description").asText());
-            newTask.setStatus(jsonNode.get("status").asText());
-            newTask.setPriority(jsonNode.get("priority").asText());
-            newTask.setAssignedTo(jsonNode.get("assignedTo").asText());
-            newTask.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
-            newTask.setTaskType(jsonNode.get("taskType").asText());
-            newTask.setTaskCategory(jsonNode.get("taskCategory").asText());
-            JsonNode commentsNode = jsonNode.get("comments");
-            if (commentsNode != null && commentsNode.isArray()) {
-                List<Comment> comments = new ArrayList<>();
-                for (JsonNode commentNode : commentsNode) {
-                    Comment comment = new Comment();
-                    comment.setBody(commentNode.get("body").asText());
-                    comment.setCreatedBy("nraj");
-                    comments.add(comment);
-                }
-                newTask.setComments(comments);
-                }
-            /*if(file!=null && !file.isEmpty()) {
-                ArrayList<Attachment> attachments = new ArrayList<>();
-                    Attachment attachment = new Attachment();
-                    attachment.setTaskid(jsonNode.get("tid").asText());
-                    attachment.setFileName(file.getOriginalFilename());
-                    attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
-                    attachments.add(attachment);
-
-                newTask.setAttachments(attachments);
-            }*/
-            return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
-        } catch (Exception e) {
-            log.error("Error creating a new task", e);
-            return new ResponseEntity<Task>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    public ResponseEntity<Task> createTask(@RequestPart("task") String requestBody, HttpSession session,@RequestParam("file") MultipartFile file){
+        // User loggedInUser = authService.getCurrentUser(session);
+         ObjectMapper objectMapper = new ObjectMapper();
+         try {
+             JsonNode jsonNode = objectMapper.readTree(requestBody);
+             Task newTask = new Task();
+            // newTask.setCreatedBy(loggedInUser.getUsername());
+            newTask.setCreatedBy("nraj");
+             newTask.setTid(jsonNode.get("tid").asText());
+             newTask.setTitle(jsonNode.get("title").asText());
+             newTask.setDescription(jsonNode.get("description").asText());
+             newTask.setStatus(jsonNode.get("status").asText());
+             newTask.setPriority(jsonNode.get("priority").asText());
+             newTask.setAssignedTo(jsonNode.get("assignedTo").asText());
+             newTask.setDueDate(LocalDate.parse(jsonNode.get("dueDate").asText()));
+             newTask.setTaskType(jsonNode.get("taskType").asText());
+             newTask.setTaskCategory(jsonNode.get("taskCategory").asText());
+             JsonNode commentsNode = jsonNode.get("comments");
+             if (commentsNode != null && commentsNode.isArray()) {
+                 List<Comment> comments = new ArrayList<>();
+                 for (JsonNode commentNode : commentsNode) {
+                     Comment comment = new Comment();
+                     comment.setBody(commentNode.get("body").asText());
+                     comment.setCreatedBy("nraj");
+                     comments.add(comment);
+                 }
+                 newTask.setComments(comments);
+             }
+             //JsonNode attachmentsNode = jsonNode.get("attachments");
+             if (file != null) {
+                 List<Attachment> attachments = new ArrayList<>();
+                 //attach only one file at a time
+                     Attachment attachment = new Attachment();
+                     attachment.setTaskid(jsonNode.get("tid").asText());
+                     attachment.setFileName(file.getOriginalFilename());
+                     attachment.setFile(new Binary(BsonBinarySubType.BINARY, file.getBytes()));
+                     attachments.add(attachment);
+ 
+                 newTask.setAttachments(attachments);
+             }
+             return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
+         } catch (Exception e) {
+             log.error("Error creating a new task", e);
+             return new ResponseEntity<Task>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+     }
 
     /**
      * Update Task
@@ -132,7 +134,7 @@ public class TaskController {
             task.setAssignedTo(jsonNode.get("assignedTo").asText());
             JsonNode commentsNode = jsonNode.get("comments");
             if (commentsNode != null && commentsNode.isArray()) {
-                List<Comment> comments = task.getComments();
+                List<Comment> comments = new ArrayList<>();
                 for (JsonNode commentNode : commentsNode) {
                     Comment comment = new Comment();
                     comment.setTaskId(tid);
