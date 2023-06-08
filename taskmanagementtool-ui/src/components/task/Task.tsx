@@ -62,7 +62,7 @@ interface Task {
   taskType: string;
   taskCategory: string;
   comments: string[];
-  attachments: string[];
+
   filename: string;
 }
 
@@ -175,8 +175,7 @@ const Task: React.FC = () => {
       // const bodyElements = data.notifications.map((d: any) => d.body);
       // console.log(bodyElements);
      
-        const at = data.attachments;
-setFilename(at.filename);
+      
        
       
       //setAttachments(data.attachments);
@@ -204,7 +203,6 @@ setFilename(at.filename);
           dueDate,
           taskType,
           taskCategory,
-      attachments,
       comments,
       status,
           assignedTo,
@@ -496,7 +494,7 @@ setFilename(at.filename);
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={20} sm={20}>
                 <InputLabel shrink>Comments</InputLabel>
                 <TextareaAutosize
                   minRows={3}
@@ -543,25 +541,8 @@ setFilename(at.filename);
                   </Box>
                 ))}
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <InputLabel shrink>Attachments</InputLabel>
-                  {attachments.map((attachment, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      border: "1px solid #ccc",
-                      p: 2,
-                      mb: 2,
-                      textAlign: "left",
-                      marginTop: "4px",
-                    }}
-                  >
-                    <Typography variant="body1" gutterBottom>
-                      File Name: {attachment.filename}
-                    </Typography>
-                  </Box>
-                ))}
-</Grid>
+              
+              
             </Grid>
           </Paper>
           <Box>

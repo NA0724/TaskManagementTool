@@ -200,18 +200,7 @@ const TaskList = () => {
           </Typography>
 
           <div>
-            <IconButton
-              color="inherit"
-              size="large"
-              onClick={handleAddButtonClick}
-            >
-              <AddCircleOutline />
-            </IconButton>
-            <Drawer anchor="right" open={isOpen} onClose={handleClose}>
-              <Box sx={{ width: 300, padding: "1rem" }}>
-                {/* <AddTask onSubmit={handleSubmit} onCancel={handleClose} /> */}
-              </Box>
-            </Drawer>
+           
           </div>
 
           <div className="search-bar">

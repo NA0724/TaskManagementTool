@@ -64,14 +64,14 @@ public class TaskController {
      * @return
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestPart("task") String requestBody, HttpSession session,@RequestParam("file") MultipartFile file){
+    public ResponseEntity<Task> createTask(@RequestBody String requestBody, HttpSession session){
        // User loggedInUser = authService.getCurrentUser(session);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode jsonNode = objectMapper.readTree(requestBody);
             Task newTask = new Task();
            // newTask.setCreatedBy(loggedInUser.getUsername());
-           newTask.setCreatedBy(jsonNode.get("createdBy").asText());
+           newTask.setCreatedBy("nraj");
             newTask.setTid(jsonNode.get("tid").asText());
             newTask.setTitle(jsonNode.get("title").asText());
             newTask.setDescription(jsonNode.get("description").asText());
@@ -87,12 +87,12 @@ public class TaskController {
                 for (JsonNode commentNode : commentsNode) {
                     Comment comment = new Comment();
                     comment.setBody(commentNode.get("body").asText());
-                    comment.setCreatedBy(jsonNode.get("createdBy").asText());
+                    comment.setCreatedBy("nraj");
                     comments.add(comment);
                 }
                 newTask.setComments(comments);
                 }
-            if(file!=null && !file.isEmpty()) {
+            /*if(file!=null && !file.isEmpty()) {
                 ArrayList<Attachment> attachments = new ArrayList<>();
                     Attachment attachment = new Attachment();
                     attachment.setTaskid(jsonNode.get("tid").asText());
@@ -101,7 +101,7 @@ public class TaskController {
                     attachments.add(attachment);
 
                 newTask.setAttachments(attachments);
-            }
+            }*/
             return new ResponseEntity<Task>(taskService.createTask(newTask), HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Error creating a new task", e);
