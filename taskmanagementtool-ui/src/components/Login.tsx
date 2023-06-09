@@ -5,6 +5,8 @@ import Container from "react-bootstrap/Container";
 import { Link, useNavigate } from "react-router-dom";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Card } from "react-bootstrap";
+import "./style.css";
 
 interface FormState {
   username: string;
@@ -52,7 +54,6 @@ const Login: React.FC = () => {
       if (response.success) {
         // Redirect to the login page if createUser is successful
         navigate("/dashboard");
-        console.log("Session Value:", response.sessionValue);
       } else {
         setError("Invalid username or password. Couldnt login!");
         console.error("User login failed:", response.error);
@@ -64,21 +65,27 @@ const Login: React.FC = () => {
 
   const loginUser = async (userData: FormState) => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/v1/loginUser",
-        {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-      );
+      const response = await fetch("http://localhost:8080/api/v1/loginUser", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify(userData),
+      });
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   return { success: true, data };
+      // } else {
       if (response.ok) {
         const data = await response.json();
         const sessionValue = data.sessionValue;
-        sessionStorage.setItem('user', sessionValue);
+        const userName = data.sessionValue.split("_")[0];
+        //const auth = data.sessionValue.split("_")[1].split(" ")[1];
+        sessionStorage.setItem("user", userName);
+        //sessionStorage.setItem("userAuth", auth);
+        localStorage.setItem("username", userName);
         return { success: true, sessionValue };
       } else {
         const error = await response.text();
@@ -91,13 +98,14 @@ const Login: React.FC = () => {
 
   return (
     <Container
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{ fontSize: "14px" }}
+      className="d-flex justify-content-center align-items-center custom-container"
+      
     >
-      <div className="border p-4">
+      <Card style={{ width: '300px', backgroundColor: 'white', padding: '1rem' , color: 'black'}}>
+       <h5>Login</h5>
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="username">
-            <Form.Label>Username</Form.Label>
+            <Form.Label className="label-black">Username</Form.Label>
             <Form.Control
               type="text"
               name="username"
@@ -118,7 +126,7 @@ const Login: React.FC = () => {
           </Form.Group>
 
           <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
+            <Form.Label className="label-black">Password</Form.Label>
             <Form.Control
               type="password"
               name="password"
@@ -144,14 +152,14 @@ const Login: React.FC = () => {
             <Col>
               <Button type="submit">Login</Button>
             </Col>
-            <Col xs="auto">
+            <Col >
               <Link to="/">
                 <Button variant="secondary">Cancel</Button>
               </Link>
             </Col>
           </Row>
         </Form>
-      </div>
+      </Card>
     </Container>
   );
 };

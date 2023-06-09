@@ -42,6 +42,6 @@ public class TaskReminderConfig {
 
     protected User getUser(HttpSession session){
         return authService.getCurrentUser(session);
-    }
+}
     
 }

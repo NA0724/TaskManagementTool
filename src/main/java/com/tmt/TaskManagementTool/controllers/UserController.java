@@ -29,10 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @RestController
 @RequestMapping("/api/v1/users")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 public class UserController {
 
@@ -47,6 +48,7 @@ public class UserController {
 
     /**
      * Get lis of all users
+     * 
      * @return
      */
     @GetMapping
@@ -56,141 +58,173 @@ public class UserController {
 
     /**
      * Create a new user
+     * 
      * @param requestBody
      * @return
      */
     @PostMapping("/create-user")
-    public ResponseEntity<User> createUser(@RequestBody String requestBody){
+    public ResponseEntity<User> createUser(@RequestBody String requestBody) {
         ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			JsonNode jsonNode = objectMapper.readTree(requestBody);
-			User newUser = new User();
+        try {
+            JsonNode jsonNode = objectMapper.readTree(requestBody);
+            User newUser = new User();
             newUser.setFirstname(jsonNode.get("firstname").asText());
             newUser.setLastname(jsonNode.get("lastname").asText());
             newUser.setEmail(jsonNode.get("email").asText());
             newUser.setUsername(jsonNode.get("username").asText());
             newUser.setPassword(jsonNode.get("password").asText());
+            JsonNode roleNode = jsonNode.get("role");
+            if (roleNode != null) {
+                Role newRole = new Role();
+                newRole = roleService.getRoleByName(roleNode.get("name").asText());
+                ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
+                
+                    List<String> permissions = new ArrayList<>();
+                    for (JsonNode per : permissionNode) {
+                        permissions.add(per.asText());
+                    }
+                    newRole.setPermissions(permissions);
+                roleService.updateRole(newRole);
+                newUser.setRole(newRole);
+            }
+            
+
             return new ResponseEntity<User>(userService.createUser(newUser), HttpStatus.CREATED);
-        }catch (Exception e) {
-            System.out.println("@>@ Exception occurred in creating new user : " + e); 
+        } catch (Exception e) {
+            System.out.println("@>@ Exception occurred in creating new user : " + e);
         }
         return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * Update user
+     * 
      * @param username
      * @param requestBody
      * @return
      */
     @PutMapping("/edit-user")
-    public ResponseEntity<User> updateUser(@RequestParam("user") String username, @RequestBody String requestBody){
+    public ResponseEntity<User> updateUser(@RequestParam("user") String username, @RequestBody String requestBody) {
         User user = userService.getUserByUsername(username);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-			JsonNode jsonNode = objectMapper.readTree(requestBody);
-            user.setEmail(jsonNode.get("email").asText());
-            user.setPassword(jsonNode.get("password").asText());
-            userService.updateUser(user);
-            return new ResponseEntity<User>(HttpStatus.OK);
-        }catch (Exception e) {
-            System.out.println("@>@ Exception occurred in updating user : " + e); 
+            JsonNode jsonNode = objectMapper.readTree(requestBody);
+
+            if (jsonNode.get("firstname").asText()!=null){
+                user.setFirstname(jsonNode.get("firstname").asText());
+            }
+            if(jsonNode.get("lastname").asText()!=null){
+                user.setLastname(jsonNode.get("lastname").asText());
+            }
+            if(jsonNode.get("email").asText()!=null){
+                user.setEmail(jsonNode.get("email").asText());
+            }
+            if(jsonNode.get("password").asText()!=null){
+                user.setPassword(jsonNode.get("password").asText());
+            }
+            if(jsonNode.get("username").asText()!=null){
+                user.setUsername(jsonNode.get("username").asText());
+            } 
+            JsonNode roleNode = jsonNode.get("role");
+            if (roleNode != null) {
+                Role newRole = new Role();
+                
+                newRole = roleService.getRoleByName(roleNode.get("name").asText());
+                ArrayNode permissionNode = (ArrayNode) roleNode.get("permissions");
+               
+                    List<String> permissions = new ArrayList<>();
+                    for (JsonNode per : permissionNode) {
+                        permissions.add(per.asText());
+                    }
+                    newRole.setPermissions(permissions);
+                
+                user.setRole(newRole);
+                }
+            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("@>@ Exception occurred in updating user : " + e);
         }
         return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
      * Delete user
+     * 
      * @param username
      */
     @GetMapping("/delete-user/{username}")
-    public void deleteUser(@PathVariable String username){
+    public void deleteUser(@PathVariable String username) {
         userService.deleteUser(username);
     }
 
     /**
      * Search user by ID
+     * 
      * @param id
      * @return
      */
     @GetMapping("/search-id/{id}")
-    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id){
-        return new ResponseEntity<Optional<User>>(userService.getUserById(id),HttpStatus.OK) ;
+    public ResponseEntity<Optional<User>> getUserById(@PathVariable ObjectId id) {
+        return new ResponseEntity<Optional<User>>(userService.getUserById(id), HttpStatus.OK);
     }
 
     /**
      * Search user by email
+     * 
      * @param email
      * @return
      */
     @GetMapping("/search-email/{email}")
-    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email){
+    public ResponseEntity<Optional<User>> getUserByEmail(@PathVariable String email) {
         return new ResponseEntity<Optional<User>>(userService.getUserByEmail(email), HttpStatus.OK);
     }
 
     /**
      * Search user by username
+     * 
      * @param username
      * @return
      */
     @GetMapping("/search-username/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username){
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
-        //user.get().setRole(role);
+        // user.get().setRole(role);
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
     /**
-     * Get role of an user
-     * @param username
-     * @param requestBody
-     */
-    @GetMapping("/role/{username}")
-    public void getUserRole(@PathVariable String username, @RequestBody String requestBody){
-        userService.getRoleByUsername(username);
-    }
-
-    /**
      * Assign Role to an user
+     * 
      * @param username
      * @param requestBody
      */
     @PostMapping("/assign-role/{username}")
-    public ResponseEntity<User> assignUserRole(@PathVariable String username, @RequestBody String requestBody, HttpSession session){
-        User loggedUser = authService.getCurrentUser(session);
-        if (loggedUser.getRole().equals(roleService.getRoleByName("Manager"))){
-            User user = userService.getUserByUsername(username);
-            ObjectMapper objectMapper = new ObjectMapper();
-		    //ResponseEntity<User> responseEntity = null;
-            try {
-			    JsonNode jsonNode = objectMapper.readTree(requestBody);
-                Role role = new Role();
-                String rid = jsonNode.get("rid").asText();
-                if (roleService.getRoleByRid(rid)!=null){
-                    role = roleService.getRoleByRid(rid);
-                }else{
-                    role.setRid(rid);
-                    role.setName(jsonNode.get("name").asText());
-                    JsonNode permissionNode = jsonNode.get("permission");
-                    if (permissionNode != null && permissionNode.isArray()){
-                        List<String> permissions = new ArrayList<>();
-                        for(JsonNode per : permissionNode){
-                            permissions.add(per.asText());
-                        }
-                        role.setPermissions(permissions);
-                    }
-                    roleService.createRole(role);
-                }
-                user.setRole(role);
-                return new ResponseEntity<User>(HttpStatus.OK);
-            } catch (Exception e) {
-                log.error("Cannot assign role to user", e);
-                return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<User> assignUserRole(@PathVariable String username, @RequestBody String requestBody,
+            HttpSession session) {
+        //User loggedUser = authService.getCurrentUser(session);
+        // if (loggedUser.getRole().equals(roleService.getRoleByName("Manager"))) {
+        User user = userService.getUserByUsername(username);
+        ObjectMapper objectMapper = new ObjectMapper();
+        // ResponseEntity<User> responseEntity = null;
+        try {
+            JsonNode jsonNode = objectMapper.readTree(requestBody);
+            Role role = new Role();
+            String roleName = jsonNode.get("name").asText();
+            role = roleService.getRoleByName(roleName);
+            ArrayNode permissionNode = (ArrayNode) jsonNode.get("permissions");
+            List<String> permissions = new ArrayList<>();
+            for (JsonNode per : permissionNode) {
+                permissions.add(per.asText());
+            }
+            role.setPermissions(permissions);
+            roleService.updateRole(role);
+            user.setRole(role);
+
+            return new ResponseEntity<User>(userService.updateUser(user), HttpStatus.OK);
+        }catch (Exception e) {
+            log.error("Cannot assign role to user", e);
+            return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    log.error("Logged in user is not permitted to assign role");
-    return new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
-}  
-
 
 }

@@ -18,6 +18,7 @@ import com.tmt.TaskManagementTool.services.AuthService;
 import com.tmt.TaskManagementTool.services.UserService;
 
 import jakarta.servlet.http.HttpSession;
+
 import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @Slf4j
 public class LoginRegisterConroller {
 
@@ -37,13 +38,15 @@ public class LoginRegisterConroller {
 
 	/**
 	 * Login API
+	 * 
 	 * @param requestBody
 	 * @param session
 	 * @return
 	 * @throws LoginException
 	 */
 	@PostMapping("/loginUser")
-	public ResponseEntity<LoginResponse> getUserByUsername(@RequestBody String requestBody, HttpSession session) throws LoginException{
+	public ResponseEntity<LoginResponse> getUserByUsername(@RequestBody String requestBody, HttpSession session)
+			throws LoginException {
 		// User user = new User();
 		HttpHeaders headers = new HttpHeaders();
 		log.info("User: " + requestBody);
@@ -61,7 +64,7 @@ public class LoginRegisterConroller {
 				headers.add("Authorization", auth);
 				LoginResponse loginResponse = new LoginResponse(true, session.getAttribute("user"));
 				responseEntity = ResponseEntity.ok().headers(headers).body(loginResponse);
-			} 
+			}
 		} catch (Exception e) {
 			log.error("Unable to login, error: " , e);
 			return new ResponseEntity<>(new LoginResponse(false, null), HttpStatus.UNAUTHORIZED);
@@ -76,6 +79,7 @@ public class LoginRegisterConroller {
 	 */
 	@PostMapping("/registerUser")
 	public ResponseEntity<User> createUser(@RequestBody String requestBody) {
+		log.info(requestBody);
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			JsonNode jsonNode = objectMapper.readTree(requestBody);
@@ -91,8 +95,8 @@ public class LoginRegisterConroller {
 			newUser.setPassword(password);
 			newUser.setFirstname(firstName);
 			newUser.setLastname(lastName);
-			//Role role = new Role();
-			//newUser.setRole(role);
+			// Role role = new Role();
+			// newUser.setRole(role);
 
 			return new ResponseEntity<User>(userService.createUser(newUser),
 					HttpStatus.CREATED);

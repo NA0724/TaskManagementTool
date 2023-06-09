@@ -13,6 +13,7 @@ import com.tmt.TaskManagementTool.models.Attachment;
 import com.tmt.TaskManagementTool.models.Comment;
 import com.tmt.TaskManagementTool.models.Notification;
 import com.tmt.TaskManagementTool.models.Task;
+import com.tmt.TaskManagementTool.models.User;
 import com.tmt.TaskManagementTool.models.UserTask;
 import com.tmt.TaskManagementTool.repositories.AttachmentRepository;
 import com.tmt.TaskManagementTool.repositories.CommentRepository;
@@ -25,9 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class TaskService {
-    
+
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private NotificationService notificationService;
@@ -46,55 +50,65 @@ public class TaskService {
 
     /**
      * Get all the tasks that is created by user
+     * 
      * @param username
      * @return
      */
-    public List<Task> getAllTasksCreatedByUser(String username){
-       List<Task> allTasks = taskRepository.findTasksByCreatedBy(username);
-        log.info("found tasks for user " + username);
+    public List<Task> getAllTasksCreatedByUser(String username) {
+        List<Task> allTasks = taskRepository.findTasksByCreatedBy(username);
+        log.info("found tasks created by user " + username);
         return allTasks;
     }
 
     /**
      * Get all tasks assigned to user
+     * 
      * @param username
      * @return
      */
-    public List<Task> getAllTasksAssignedToUser(String username){
-       List<Task> allTasks = taskRepository.findTasksByAssignedTo(username);
-        log.info("found tasks for user " + username);
+    public List<Task> getAllTasksAssignedToUser(String username) {
+        List<Task> allTasks = taskRepository.findTasksByAssignedTo(username);
+        log.info("found tasks assigned to user " + username);
         return allTasks;
     }
 
     /**
      * find specific status tasks for user
+     * 
      * @param username
      * @param status
      * @return
      */
-    public List<Task> findTaskListByStatusAssignedToUser(String username, String status){
+    public List<Task> findTaskListByStatusAssignedToUser(String username, String status) {
+
+        User user = userService.getUserByUsername(username);
+
         List<Task> alltasksByStatus = taskRepository.findTasksByStatus(status);
-        alltasksByStatus.stream().filter(t -> t.getCreatedBy().equalsIgnoreCase(username))
-                    .collect(Collectors.toList());
+        alltasksByStatus.stream().filter(t -> t.getCreatedBy().equalsIgnoreCase(user.getUsername()))
+                .collect(Collectors.toList());
         return alltasksByStatus;
     }
 
     /**
      * count the number of tasks by status
+     * 
      * @param status
      * @return
      */
-    public int countTaskByStatus(String status){
+    public int countTaskByStatus(String status) {
         List<Task> allTaskByStatus = taskRepository.findTasksByStatus(status);
-        return allTaskByStatus.size();
+        int size = allTaskByStatus.size();
+        log.info("Task count with status {}: " + size, status);
+        return size;
     }
 
     /**
      * Create a new task
+     * 
      * @param task
      * @return
      */
-    public Task createTask(Task task){
+    public Task createTask(Task task) {
         task.setCreatedAt(genericUtil.getCurrentDateTime());
         
         if(task.getComments()!=null){
@@ -106,37 +120,20 @@ public class TaskService {
         }
 
         if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
+
             Notification notification = notificationService.createNotificationForTask(task.getTid());
             notification.setBody("Task " + task.getTid() + ": has been assigned to you by " + task.getCreatedBy());
             notification.setTaskId(task.getTid());
             notification.setUserId(task.getAssignedTo());
             notificationService.saveNotification(notification);
         }
-        
-        //updateTask(task);
         return taskRepository.insert(task);
     }
 
-    /*public Task createTask(Task task){
-        task.setCreatedAt(genericUtil.getCurrentDateTime());
-        if (task.getAssignedTo() != null && task.getCreatedBy()!=null){
-            Notification notification = notificationService.createNotificationForTask(task.getTid());
-            notification.setBody("Task " + task.getTid() + ": has been assigned to you by " + task.getCreatedBy());
-            notification.setTaskId(task.getTid());
-            notification.setUserId(task.getAssignedTo());
-            notificationService.saveNotification(notification);
-        }
-        if(task.getComments()!=null){
-            comment.setCreatedAt(genericUtil.getCurrentDateTime());
-            commentRepository.insert(comment);
-        }
-        updateTask(task);
-        return taskRepository.insert(task);
-    }*/
-
     public Task getTaskByTid(String tid){
+
         Optional<Task> taskOptional = taskRepository.findTaskByTid(tid);
-        Task task = taskOptional.orElseThrow(()-> new IllegalArgumentException("Task not found with tid: "+ tid));
+        Task task = taskOptional.orElseThrow(() -> new IllegalArgumentException("Task not found with tid: " + tid));
         return task;
     }
 
@@ -158,20 +155,20 @@ public class TaskService {
         }
         
         Notification notification = notificationService.createNotificationForTask(task.getTid());
-        
-        if(!(oldTask.getStatus()==oldTask.getStatus())){
-            notification.setBody("Task " + task.getTid() + ": Status changed to " +task.getStatus());
-            
-        }else if (!(oldTask.getAssignedTo().equalsIgnoreCase(task.getAssignedTo()))){
+
+        if (!(oldTask.getStatus() == task.getStatus())) {
+            notification.setBody("Task " + task.getTid() + ": Status changed to " + task.getStatus());
+
+        } else if (!(oldTask.getAssignedTo().equalsIgnoreCase(task.getAssignedTo()))) {
             notification.setBody("Task " + task.getTid() + ": has been assigned to you.");
             updateTask(oldTask);
-        }else{
-            notification.setBody("There is an update to Task " + task.getTid() +". Please check.");
+        } else {
+            notification.setBody("There is an update to Task " + task.getTid() + ". Please check.");
         }
 
         notification.setUserId(task.getAssignedTo());
         notificationService.saveNotification(notification);
-        
+
         return taskRepository.save(task);
     }
 
@@ -184,11 +181,11 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public List<Comment> getCommentsForTask(String taskid){
+    public List<Comment> getCommentsForTask(String taskid) {
         return commentRepository.findCommentsByTaskId(taskid);
     }
-    
-    public void createCommentForTask(Task task, Comment comment){
+
+    public void createCommentForTask(Task task, Comment comment) {
         comment.setCreatedAt(genericUtil.getCurrentDateTime());
         commentRepository.insert(comment);
         taskRepository.save(task);
@@ -198,36 +195,36 @@ public class TaskService {
         notificationService.saveNotification(notification);
     }
 
-    public List<Task> findTaskByStatus(String status){
+    public List<Task> findTaskByStatus(String status) {
         List<Task> allTaskByStatus = taskRepository.findTasksByStatus(status);
         return allTaskByStatus;
     }
 
-    public List<Task> findTaskByDueDate(LocalDate duedate){
+    public List<Task> findTaskByDueDate(LocalDate duedate) {
         List<Task> allTaskDue = taskRepository.findTaskByDueDate(duedate);
-        return allTaskDue ;
+        return allTaskDue;
     }
 
-    public List<Task> filterTaskByStatusAndDueDate(String status, LocalDate dueDate){
+    public List<Task> filterTaskByStatusAndDueDate(String status, LocalDate dueDate) {
         return taskRepository.findTasksByStatusAndDueDate(status, dueDate);
     }
 
-    public Attachment saveAttachment(String taskid, Attachment attachment){
+    public Attachment saveAttachment(String taskid, Attachment attachment) {
         Task task = getTaskByTid(taskid);
         task.getAttachments().add(attachment);
         taskRepository.save(task);
         return attachmentRepository.insert(attachment);
     }
 
-    public List<Attachment> geAttachmentsForTask(String taskid){
+    public List<Attachment> geAttachmentsForTask(String taskid) {
         return attachmentRepository.findAttachmentsByTaskid(taskid);
     }
 
-    public void updateUserTask(Task task){
+    public void updateUserTask(Task task) {
         UserTask userTask = new UserTask();
         userTask.setTaskid(task.getTid());
         userTask.setCreatedBy(task.getCreatedBy());
-        if (task.getAssignedTo()!=null) {
+        if (task.getAssignedTo() != null) {
             userTask.setAssignedTo(task.getAssignedTo());
         }
         userTaskRepository.save(userTask);
@@ -239,3 +236,4 @@ public class TaskService {
     }
 
 }
+
