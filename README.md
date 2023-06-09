@@ -52,6 +52,9 @@
 ### Profile Page
 ![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/5c85983d-b8b4-4704-8ca1-78e4b17a44c9)
 
+### Notifications
+![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/f6912e19-45dd-42d3-a9c3-1f3e26993683)
+
 
 
 
