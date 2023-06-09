@@ -122,9 +122,9 @@ public class UserController {
             if(jsonNode.get("password").asText()!=null){
                 user.setPassword(jsonNode.get("password").asText());
             }
-if(jsonNode.get("username").asText()!=null){
-    user.setUsername(jsonNode.get("username").asText());
-} 
+            if(jsonNode.get("username").asText()!=null){
+                user.setUsername(jsonNode.get("username").asText());
+            } 
             JsonNode roleNode = jsonNode.get("role");
             if (roleNode != null) {
                 Role newRole = new Role();

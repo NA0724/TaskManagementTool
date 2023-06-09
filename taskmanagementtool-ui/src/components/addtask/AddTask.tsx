@@ -140,6 +140,7 @@ const AddTask: React.FC<AddTaskProps> = ({ onCancel }) => {
       const data = await response.json();
       console.log(data);
       setLoading(false);
+      window.location.reload();
     } catch (error) {
       setLoading(false);
       console.error("Error fetching users:", error);

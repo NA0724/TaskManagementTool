@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState  } from "react";
 import {
   Typography,
   Grid,
@@ -42,13 +42,15 @@ import {
 } from "@mui/icons-material";
 import "./Dashboard.css";
 import { styled } from "@mui/system";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import TaskCard from "../taskcard/TaskCard";
 import AddTask from "../addtask/AddTask";
 import NotificationPane from "../notification/NotificationPane";
 
+
 // Import the background image
 import backgroundImage from "../images/background.jpg";
+
 
 interface Task {
   id: string;
@@ -77,23 +79,34 @@ interface Comment {
   createdAt: string;
   createdBy: string;
 }
+interface User {
+  id: {
+    timestamp: number;
+    date: string;
+  };
+  username: string;
+  password: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  role: string | null;
+  permission: string | null;
+}
 
 interface NotificationPaneProps {
   notifications: string[];
   onClose: () => void;
 }
+const user = sessionStorage.getItem("user");
 
 const Dashboard: React.FC = () => {
+  
   // Retrieve the user value from sessionStorage
   const user = sessionStorage.getItem("user");
-
-  // Use the user value as needed in your component
-  console.log(user); // Example: Output the user value to the console
-
+    
+  console.log(user);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-  const [newTaskCount, setnewTaskCount] = React.useState(0);
-  const [inProgressTasksCount, setinProgressTasksCount] = React.useState(0);
-  const [completedTasksCount, setcompletedTasksCount] = React.useState(0);
+  const [logged, setLogged] = useState<User>();
   const [loading, setLoading] = useState(true);
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -138,11 +151,6 @@ const Dashboard: React.FC = () => {
 
   const handleSubmit = () => {
     console.log("Submit Clicked in dashboard");
-    // Handle form submission logic here'
-    // console.log("Title:", title);
-    // console.log("Description:", description);
-    // console.log("Priority:", priority);
-    // console.log("Submit Clicked in dashboard");
   };
 
   const handleNotificationClick = () => {
@@ -161,14 +169,13 @@ const Dashboard: React.FC = () => {
     window.location.href = "/login";
   };
 
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasksAssignedTo, setTasksAssignedTo] = useState<Task[]>([]);
+  const [tasksCreatedBy, setTasksCreatedBy] = useState<Task[]>([]);
   const [notifications, setNotifications] = useState<string[]>([]);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
+ 
   const fetchNotifications = async () => {
+    const logged = user ? user : "";
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/home/dashboard`,
@@ -177,14 +184,14 @@ const Dashboard: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*",
+            "Logged": logged,
           },
         }
       );
       const data = await response.json();
-      setTasks(data.tasksAssignedTo);
-      setcompletedTasksCount(data.completedTasksCount);
-      setinProgressTasksCount(data.inProgressTasksCount);
-      setnewTaskCount(data.newTaskCount);
+      setLogged(data.user);
+      setTasksAssignedTo(data.tasksAssignedTo);
+      setTasksCreatedBy(data.tasksCreatedBy);
       const bodyElements = data.notifications.map((d: any) => d.body);
       console.log(bodyElements);
       setNotifications(bodyElements);
@@ -194,6 +201,10 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   return (
     <div className="dashboard-container" style={{ backgroundSize: 'cover', minHeight: '100vh', position: 'relative' }}>
@@ -210,7 +221,7 @@ const Dashboard: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome, {user}!
+            Welcome, {logged?.firstname || ""} {logged?.lastname || ""}!
           </Typography>
 
           <div>
@@ -291,6 +302,7 @@ const Dashboard: React.FC = () => {
         </Grid>
       </Grid>
 
+
       {/* Top Row */}
       <Grid item xs={3}>
         <Box display="flex" alignItems="center" mb={2} paddingTop={'50px'}>
@@ -307,7 +319,40 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={10} paddingLeft={'9rem'} paddingRight={'80px'}>
         <Grid item xs={10}>
           <Grid container spacing={3}>
-            {tasks.map((task) => (
+            
+            {tasksAssignedTo.map((task) => (
+              <Grid item xs={3} key={task.id}>
+                <TaskCard
+                  tid={task.tid}
+                  title={task.title}
+                  priority={task.priority}
+                  assignedTo={task.assignedTo}
+                  status={task.status}
+                  dueDate={task.dueDate}
+                  createdBy={task.createdBy}
+                />
+              </Grid>
+            ))  }
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={3}>
+        <Box display="flex" alignItems="center" mb={2} paddingTop={'50px'}>
+          <Typography variant="h3" component="span" fontWeight="bold" color="black">
+           Tasks Created By Me
+          </Typography>
+        </Box>
+      </Grid>
+      <Backdrop open={loading} style={{ zIndex: 999 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {/* Tasks Grid - Takes 70% of the width */}
+
+      <Grid container spacing={10} paddingLeft={'9rem'} paddingRight={'80px'}>
+        <Grid item xs={10}>
+          <Grid container spacing={3}>
+            {tasksCreatedBy.map((task) => (
               <Grid item xs={3} key={task.id}>
                 <TaskCard
                   tid={task.tid}
@@ -322,51 +367,13 @@ const Dashboard: React.FC = () => {
             ))}
           </Grid>
         </Grid>
-
-        
       </Grid>
-
-      {/* SECOND PORTION */}
-      {/* Top Row */}
-      <br />
-      {user === "mgr" && (
-        <div>
-          <Grid item xs={3}>
-            <Box display="flex" alignItems="center" mb={2}>
-              <Typography variant="h6" component="span">
-                All Tasks
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid container spacing={2}>
-            <Grid item xs={10}>
-              <Grid container spacing={2}>
-                {tasks.map((task) => (
-                  <Grid item xs={4} key={task.id}>
-                    <TaskCard
-                      tid={task.tid}
-                      title={task.title}
-                      priority={task.priority}
-                      assignedTo={task.assignedTo}
-                      status={task.status}
-                      dueDate={task.dueDate}
-                      createdBy={task.createdBy}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Grid>
-          </Grid>
-        </div>
-      )}
-      {/* Tasks Grid - Takes 70% of the width */}
-      <Grid container spacing={2}>
-        {/* Vertical Menu - Takes 30% of the width */}
-        <Grid item xs={2}></Grid>
-      </Grid>
+      
+      
     </div>
   );
-};
+                };
+                export default Dashboard;
 
-export default Dashboard;
+
+

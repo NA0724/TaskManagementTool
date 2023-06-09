@@ -22,6 +22,7 @@ import com.tmt.TaskManagementTool.services.TaskService;
 import com.tmt.TaskManagementTool.services.UserService;
 import com.tmt.TaskManagementTool.util.GeneratePdfReportUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,57 +53,24 @@ public class DashboardController {
      * @return
      */
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<DasboardData> getDashboardPage(HttpSession session) {
-        //String username = session.getAttribute("user").toString();
-        String username = "nraj";
+    public ResponseEntity<DasboardData> getDashboardPage(HttpServletRequest request) {
+        String username = request.getHeader("Logged");
         User user = userService.getUserByUsername(username);
         log.info(user.getFirstname() + " " + user.getLastname() + " has logged in successfully");
-        DasboardData dashboardData = new DasboardData();
-
-        List<Task> tasks = taskService.getAllTasks();
-        // @>@ //// if (user.getRole().getName().equalsIgnoreCase("Manager")) {
+        
+        List<Task> tasks = taskService.getAllTasksAssignedToUser(username);
         List<Task> createdTasks = taskService.getAllTasksCreatedByUser(username);
-        dashboardData.setTasksCreatedBy(createdTasks);
-        // @>@ //// }
         List<Notification> notifications = notificationService.getAllNotificationsByUserId(username);
-        int newTasksCount = taskService.countTaskByStatus("New");
-        int inProgressTasksCount = taskService.countTaskByStatus("InProgress");
-        int completedTasksCount = taskService.countTaskByStatus("Completed");
-        dashboardData.setNewTaskCount(newTasksCount);
-        dashboardData.setCompletedTasksCount(completedTasksCount);
-        dashboardData.setInProgressTasksCount(inProgressTasksCount);
+        
+        DasboardData dashboardData = new DasboardData();
+        dashboardData.setUser(user);
         dashboardData.setTasksAssignedTo(tasks);
+        dashboardData.setTasksCreatedBy(createdTasks);
         dashboardData.setNotifications(notifications);
-        log.info("New {}, Inprogress {}, Completed {}", newTasksCount, inProgressTasksCount, completedTasksCount);
+
         return new ResponseEntity<DasboardData>(dashboardData, HttpStatus.OK);
     }
 
-    /**
-     * Get My Profile Page
-     * 
-     * @param session
-     * @return
-     */
-    @GetMapping("/my-profile")
-    public ResponseEntity<User> getMyProfile(HttpSession session) {
-        String username = session.getAttribute("user").toString();
-        User user = userService.getUserByUsername(username);
-        return new ResponseEntity<User>(user, HttpStatus.OK);
-    }
-
-    /**
-     * Generate PDF Report
-     */
-    @GetMapping("/pdfreport")
-    public void getPDFReport(HttpSession session) {
-        // String username = session.getAttribute("user").toString();
-        // User user = userService.getUserByUsername(username);
-        //User user = authService.getCurrentUser(session);
-        // @>@ // if (user.getRole().getName().equalsIgnoreCase("Manager")) {
-        generatePdfReportUtil.generatePdfReport();
-        // }
-
-    }
 
     /**
      * Get all notifications for a user

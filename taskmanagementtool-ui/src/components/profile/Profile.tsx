@@ -182,7 +182,7 @@ const Profile: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Welcome, {user}!
+            Welcome, {profileData?.firstname || ""} {profileData?.lastname || ""}!
           </Typography>
 
           <div>

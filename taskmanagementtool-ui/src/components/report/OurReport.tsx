@@ -192,8 +192,9 @@ const OurReport: React.FC = () => {
         );
         const data = await response.json();
         setTasks(data);
+        console.log("task: ",data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching tasks:", error);
       }
     };
 
@@ -290,7 +291,14 @@ const OurReport: React.FC = () => {
         </Grid>
       </Grid>
       <br></br>
-
+      <Grid item xs={12}>
+          <Typography
+            variant="h4"
+            sx={{ marginBottom: "20px", color: "white" , padding: "2rem", fontWeight: "bold"}}
+          >
+            Task Report
+          </Typography>
+        </Grid>
       <div className="task-list-container" ref={reportRef} >
         <table className="task-list-table">
           <tr>

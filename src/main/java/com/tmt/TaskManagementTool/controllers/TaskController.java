@@ -64,7 +64,8 @@ public class TaskController {
      * @return
      */
     @PostMapping("/create-task")
-    public ResponseEntity<Task> createTask(@RequestPart("task") String requestBody, HttpSession session,@RequestParam("file") MultipartFile file){
+    public ResponseEntity<Task> createTask(@RequestPart("task") String requestBody, HttpSession session,
+    @RequestParam(value="file",required = false) MultipartFile file){
         // User loggedInUser = authService.getCurrentUser(session);
          ObjectMapper objectMapper = new ObjectMapper();
          try {

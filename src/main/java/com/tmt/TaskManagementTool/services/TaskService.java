@@ -55,12 +55,8 @@ public class TaskService {
      * @return
      */
     public List<Task> getAllTasksCreatedByUser(String username) {
-        // TODO fetch user from current session
-        // check code in userservice
-        User user = userService.getUserByUsername(username);
-
-        List<Task> allTasks = taskRepository.findTasksByCreatedBy(user.getUsername());
-        log.info("found tasks created by user " + user.getUsername());
+        List<Task> allTasks = taskRepository.findTasksByCreatedBy(username);
+        log.info("found tasks created by user " + username);
         return allTasks;
     }
 
@@ -71,12 +67,8 @@ public class TaskService {
      * @return
      */
     public List<Task> getAllTasksAssignedToUser(String username) {
-        // TODO fetch user from current session
-        // check code in userservice
-        User user = userService.getUserByUsername(username);
-
-        List<Task> allTasks = taskRepository.findTasksByAssignedTo(user.getUsername());
-        log.info("found tasks assigned to user " + user.getUsername());
+        List<Task> allTasks = taskRepository.findTasksByAssignedTo(username);
+        log.info("found tasks assigned to user " + username);
         return allTasks;
     }
 

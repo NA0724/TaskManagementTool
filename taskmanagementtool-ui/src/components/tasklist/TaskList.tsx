@@ -89,6 +89,7 @@ const TaskList = () => {
       });
       const data = await response.json();
       setUsers(data);
+      console.log("users: ",data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -110,8 +111,9 @@ const TaskList = () => {
         );
         const data = await response.json();
         setTasks(data);
+        console.log("task: ",data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching tasks:", error);
       }
     };
 
