@@ -24,30 +24,24 @@ public class RoleService {
         return roleRepository.findById(id);
     }
 
-    public Optional<Role> getRoleByRid(String rid) {
-        return roleRepository.getRoleByRid(rid);
+    public Role getRoleByRid(String rid) {
+        Optional<Role> roleOptional = roleRepository.getRoleByRid(rid);
+        Role role = roleOptional.orElseThrow(() -> new IllegalArgumentException("Role " + rid + " not found!"));
+        return role;
     }
 
-    public Optional<Role> getRoleByName(String name) {
-        return roleRepository.getRoleByName(name);
+    public Role getRoleByName(String name) {
+        Optional<Role> roleOptional = roleRepository.getRoleByName(name);
+        Role role = roleOptional.orElseThrow(() -> new IllegalArgumentException("Role " + name + " not found!"));
+        return role;
     }
 
     public Role createRole(Role role) {
-        Role newRole = new Role();
-        newRole.setName(role.getName());
-        newRole.setRid(role.getRid());
-        roleRepository.save(newRole);
         return roleRepository.insert(role);
     }
 
-    public Role updateRole(String name, Role role) {
-        Optional<Role> optRole = roleRepository.getRoleByName(name);
-        Role r = optRole.get(); 
-        if (r.getRid() != null && r.getName() != null) {
-            r.setRid(role.getRid());
-            r.setName(role.getName());
-        }
-        return r;
+    public Role updateRole(Role role) {
+        return roleRepository.save(role);
     }
 
     public void deleteRole(String name) {

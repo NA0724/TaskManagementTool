@@ -8,13 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tmt.TaskManagementTool.models.Permission;
+import com.tmt.TaskManagementTool.models.Role;
 import com.tmt.TaskManagementTool.repositories.PermissionRepository;
+import com.tmt.TaskManagementTool.repositories.RoleRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class PermissionService {
 
     @Autowired
     private PermissionRepository permissionRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public List<Permission> getAllPermission() {
         return permissionRepository.findAll();
@@ -32,12 +40,19 @@ public class PermissionService {
         return permissionRepository.getPermissionByName(name);
     }
 
-    public Permission createPermission(Permission Permission) {
-        Permission newPermission = new Permission();
-        newPermission.setName(Permission.getName());
-        newPermission.setPid(Permission.getPid());
-        permissionRepository.save(newPermission);
-        return permissionRepository.insert(Permission);
+    public Permission createPermissionForRole(Permission permission, String roleId) {
+        if (permissionRepository.existsPermissionByName(permission.getName())){
+            log.info("Permission already exists");
+            return null;
+        }
+        /* Optional<Role> roleOptional = roleRepository.getRoleByRid(roleId);
+        Role role = roleOptional.orElseThrow(()-> new IllegalArgumentException("role not found"));
+        List<Permission> permissions = role.getPermissions();
+        permissionRepository.insert(permission);
+        permissions.add(permission);
+        roleRepository.save(role); */
+        
+        return permissionRepository.insert(permission);
     }
 
     public Permission updatePermission(String pid, Permission Permission) {
