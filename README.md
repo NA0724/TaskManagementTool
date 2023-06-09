@@ -38,21 +38,21 @@
 ![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/8c6b6d86-270a-4490-91c9-64a973c52e36)
 
 
-### Profile Page
+### All Tasks
 ![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/cbde73c5-2452-4129-aca5-a95c92e6c67b)
 
 ### All Users
 ![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/b3063db3-7fb4-4f8c-bc5c-ac3ed98bb15e)
 
 
-### All Tasks
-![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/906b9333-d3d9-40cc-966f-4fd400d9b7d1)
-
-
 ### Task Report
+![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/906b9333-d3d9-40cc-966f-4fd400d9b7d1)
 ![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/dfdcb7bb-a295-40b6-9511-b58bb45ebd98)
 
-![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/f41b5a7a-f0fa-4909-b8ba-3a8265902f72)
+### Profile Page
+![image](https://github.com/NA0724/TaskManagementTool/assets/115744904/5c85983d-b8b4-4704-8ca1-78e4b17a44c9)
+
+
 
 
 
